@@ -13,21 +13,23 @@ import pro.sky.diploma.dto.RegisterReq;
 import pro.sky.diploma.dto.Role;
 import pro.sky.diploma.services.AuthService;
 
+import static pro.sky.diploma.constants.FrontServerUserConstants.*;
 import static pro.sky.diploma.dto.Role.USER;
 
 @Slf4j
-@CrossOrigin(value = "http://localhost:3000")
+@CrossOrigin(value = FRONT_ADDRESS)
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
-
     private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
         if (authService.login(req.getUsername(), req.getPassword())) {
+            System.out.println("login ok");
             return ResponseEntity.ok().build();
         } else {
+            System.out.println("login false");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
