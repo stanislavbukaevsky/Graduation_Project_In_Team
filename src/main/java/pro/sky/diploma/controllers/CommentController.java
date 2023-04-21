@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import pro.sky.diploma.dto.Comment;
 import pro.sky.diploma.dto.ResponseWrapperComment;
 
+import static pro.sky.diploma.constants.FrontServerUserConstants.FRONT_ADDRESS;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 
 /**
@@ -25,6 +26,7 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 @RestController
 @RequestMapping("/ads")
 @AllArgsConstructor
+@CrossOrigin(value = FRONT_ADDRESS)
 @Tag(name = "Комментарии", description = "Позволяет управлять комментариями к объявлениям")
 public class CommentController {
     private final Logger logger = LoggerFactory.getLogger(CommentController.class);

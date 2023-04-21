@@ -16,6 +16,7 @@ import pro.sky.diploma.dto.CreateAds;
 import pro.sky.diploma.dto.FullAds;
 import pro.sky.diploma.dto.ResponseWrapperAds;
 
+import static pro.sky.diploma.constants.FrontServerUserConstants.FRONT_ADDRESS;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 
 /**
@@ -24,7 +25,7 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/ads")
-@CrossOrigin(value = "http://localhost:3000")
+@CrossOrigin(value = FRONT_ADDRESS)
 @Tag(name = "Работа со всеми объявлениями размещенными на платформе", description = "Позволяет управлять методами по работе со всеми объявлениями размещенными на платформе")
 public class AdsController {
     private final Logger logger = LoggerFactory.getLogger(AdsController.class);

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import pro.sky.diploma.dto.NewPassword;
 import pro.sky.diploma.dto.User;
 
+import static pro.sky.diploma.constants.FrontServerUserConstants.FRONT_ADDRESS;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 
 /**
@@ -22,7 +23,7 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
-@CrossOrigin(value = "http://localhost:3000")
+@CrossOrigin(value = FRONT_ADDRESS)
 @Tag(name = "Работа со всеми зарегистрированными пользователями на платформе", description = "Позволяет управлять методами по работе со всеми зарегистрированными пользователями на платформе")
 public class UserController {
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
