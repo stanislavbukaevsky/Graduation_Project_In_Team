@@ -21,6 +21,7 @@ import pro.sky.diploma.dto.RegisterReq;
 import pro.sky.diploma.dto.Role;
 import pro.sky.diploma.services.AuthService;
 
+import static pro.sky.diploma.constants.FrontServerUserConstants.FRONT_ADDRESS;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.LOGIN_MESSAGE_LOGGER_CONTROLLER;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.REGISTER_MESSAGE_LOGGER_CONTROLLER;
 import static pro.sky.diploma.dto.Role.USER;
@@ -30,7 +31,7 @@ import static pro.sky.diploma.dto.Role.USER;
  */
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(value = "http://localhost:3000")
+@CrossOrigin(value = FRONT_ADDRESS)
 @Tag(name = "Работа с регистрацией и авторизацией", description = "Позволяет управлять методами по работе с регистрацией и авторизацией пользователей на платформе")
 public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -53,8 +54,10 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginReq req) {
         logger.info(LOGIN_MESSAGE_LOGGER_CONTROLLER, req);
         if (authService.login(req.getUsername(), req.getPassword())) {
+            logger.info("login ok");
             return ResponseEntity.ok().build();
         } else {
+            logger.info("login false");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }

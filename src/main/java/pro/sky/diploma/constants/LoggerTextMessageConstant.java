@@ -18,6 +18,10 @@ public class LoggerTextMessageConstant {
     public static final String UPDATE_ADS_MESSAGE_LOGGER_CONTROLLER = "Вызван метод изменения информации об объявлении, размещенного на платформе в контроллере. Идентификатор изменяемого объявления: {}. Объявление: {}";
     public static final String GET_ADS_ME_MESSAGE_LOGGER_CONTROLLER = "Вызван метод получения объявления авторизированного пользователя, размещенного на платформе в контроллере. Объявления: {}";
     public static final String UPDATE_IMAGE_MESSAGE_LOGGER_CONTROLLER = "Вызван метод изменения изображения для объявления, размещенного на платформе в контроллере. Идентификатор изменяемого изображения: {}. Ссылка на изображение: {}";
+    public static final String GET_COMMENT_BY_ID_MESSAGE_LOGGER_CONTROLLER = "Вызван метод получения комментариев под объявлением, размещенный на платформе в контроллере. Идентификатор комментария: {}";
+    public static final String ADD_COMMENT_MESSAGE_LOGGER_CONTROLLER = "Вызван метод добавления комментариев под объявлением, размещенного на платформе в контроллере. Комментарий: {}. Идентификатор комментария: {}";
+    public static final String DELETE_COMMENT_MESSAGE_LOGGER_CONTROLLER = "Вызван метод удаления комментариев под объявлением, размещенного на платформе в контроллере. Идентификатор объявления: {}. Идентификатор комментария: {}";
+    public static final String UPDATE_COMMENT_MESSAGE_LOGGER_CONTROLLER = "Вызван метод изменения комментария под объявлением, размещенного на платформе в контроллере. Идентификатор объявления: {}. Комментарий: {}. Идентификатор комментария: {}";
     // Логи для методов в сервисах
     public static final String LOGIN_MESSAGE_LOGGER_SERVICE = "Вызван метод авторизации пользователя на платформе в сервисе. Имя пользователя: {}. Пароль: {}";
     public static final String REGISTER_MESSAGE_LOGGER_SERVICE = "Вызван метод регистрации нового пользователя на платформе в сервисе. Зарегистрированный пользователь: {}. Роль пользователя: {}";
