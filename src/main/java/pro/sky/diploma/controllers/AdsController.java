@@ -1,254 +1,155 @@
 package pro.sky.diploma.controllers;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.util.Pair;
-import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import pro.sky.diploma.dto.*;
-import pro.sky.diploma.service.AdsService;
-import pro.sky.diploma.service.CommentService;
-import pro.sky.diploma.service.VerificationUserService;
+import pro.sky.diploma.dto.Ads;
+import pro.sky.diploma.dto.CreateAds;
+import pro.sky.diploma.dto.FullAds;
+import pro.sky.diploma.dto.ResponseWrapperAds;
 
+import static pro.sky.diploma.constants.FrontServerUserConstants.FRONT_ADDRESS;
+import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 
-import java.io.IOException;
-
-@Slf4j
-@CrossOrigin(value = "http://localhost:3000")
+/**
+ * Класс-контроллер для работы со всеми объявлениями, опубликованными на платформе
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/ads")
-@Tag(name = "Объявления")
-@SecurityRequirement(name = "basicAuth")
+@CrossOrigin(value = FRONT_ADDRESS)
+@Tag(name = "Работа со всеми объявлениями размещенными на платформе", description = "Позволяет управлять методами по работе со всеми объявлениями размещенными на платформе")
 public class AdsController {
-    private final AdsService adsService;
-    private final CommentService commentService;
-    private final VerificationUserService verificationUserService;
+    private final Logger logger = LoggerFactory.getLogger(AdsController.class);
 
-    @Operation(summary = "getALLAds")
+    /**
+     * Этот метод позволяет получить и просмотреть все объявления, опубликованные на платформе
+     *
+     * @return Возвращает все опубликованные объявления на платформе
+     */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ResponseWrapperAds.class)))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ResponseWrapperAds.class)))
     })
-    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<ResponseWrapperAds> getAllAds() {
-        return ResponseEntity.ok(adsService.getAllAds());
+    @Operation(summary = "Метод для получения всех объявлений на платформе", description = "Позволяет просмотреть все объявления, размещенные на платформе")
+    @GetMapping
+    public ResponseWrapperAds getAllAds() {
+        logger.info(GET_ALL_ADS_MESSAGE_LOGGER_CONTROLLER);
+        return new ResponseWrapperAds();
     }
 
-    @Operation(summary = "addAds")
+    /**
+     * Этот метод позволяет добавлять новые объявления на платформу
+     *
+     * @param createAds добавляемое объявление
+     * @param image     ссылка на изображение
+     * @return Возвращает новое, добавленное объявление на платформу
+     */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Ads.class))),
-            @ApiResponse(responseCode = "201", description = "Created"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "Not Found")
+            @ApiResponse(responseCode = "201", description = "Объявление добавлено на платформу", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Ads.class))),
+            @ApiResponse(responseCode = "401", description = "Неавторизированный пользователь"),
+            @ApiResponse(responseCode = "403", description = "Запрещенное объявление"),
+            @ApiResponse(responseCode = "404", description = "Не найденное объявление")
+
     })
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Ads> addAds(@RequestPart(value = "properties") CreateAds properties,
-                                      @RequestPart(value = "image") MultipartFile image, Authentication authentication) throws IOException {
-        return ResponseEntity.ok(adsService.addAds(properties, image, authentication.getName()));
+    @Operation(summary = "Метод для добавления объявлений на платформу", description = "Позволяет добавить объявление на платформу")
+    @PostMapping
+    public Ads addAds(CreateAds createAds, String image) {
+        logger.info(ADD_ADS_MESSAGE_LOGGER_CONTROLLER, createAds, image);
+        return new Ads();
     }
 
-    @Operation(summary = "getAdsMe")
+    /**
+     * Этот метод позволяет получить дополнительную информацию об объявлении, размещенного на платформе
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает искомое объявление
+     */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ResponseWrapperAds.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FullAds.class))),
+            @ApiResponse(responseCode = "404", description = "Такого объвления на платформе нет")
     })
-    @GetMapping("/me")
-    public ResponseEntity<ResponseWrapperAds> getAllMeAds(Authentication authentication) {
-        return ResponseEntity.ok(adsService.getAdsMe(authentication.getName()));
+    @Operation(summary = "Метод для получения информации об объявлении, размещенного на платформе", description = "Позволяет получить информацию об объявлении, размещенном на платформе")
+    @GetMapping("/{id}")
+    public FullAds getAds(@PathVariable(required = true) Integer id) {
+        logger.info(GET_ADS_MESSAGE_LOGGER_CONTROLLER, id);
+        return new FullAds();
     }
 
-    @Operation(summary = "getComments")
+    /**
+     * Этот метод позволяет удалить объявление с платформы по его идентификатору
+     *
+     * @param id идентификатор удаляемого объявления
+     */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = ResponseWrapperComment.class))),
-            @ApiResponse(responseCode = "404", description = "Not Found")
+            @ApiResponse(responseCode = "204", description = "Объявление удалено"),
+            @ApiResponse(responseCode = "401", description = "Неавторизированный пользователь"),
+            @ApiResponse(responseCode = "403", description = "Такого объвления на платформе нет")
     })
-    @GetMapping("/{id}/comments")
-    public ResponseEntity<ResponseWrapperComment> getComment(@PathVariable Integer id) {
-        return ResponseEntity.ok(commentService.getAllCommentsByAd(id));
-    }
-
-    @Operation(summary = "addComments")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Comment.class))),
-            @ApiResponse(responseCode = "201", description = "Created"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "Not Found")
-    })
-    @PostMapping("/{id}/comments")
-    public ResponseEntity<Comment> addComment(@PathVariable Integer id,
-                                              @RequestBody Comment comments,
-                                              Authentication authentication) {
-        return ResponseEntity.ok(commentService.addComment(id, comments, authentication));
-    }
-
-    @Operation(summary = "deleteComment")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Comment.class))),
-            @ApiResponse(responseCode = "204", description = "No Content"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "Not Found")
-    })
-    @DeleteMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Integer adId,
-                                              @PathVariable Integer commentId,
-                                              Authentication authentication) {
-
-        if(!verificationUserService.verifyUsersCommentOrAdmin(commentId, authentication)){
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        commentService.deleteComment(adId, commentId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Operation(summary = "getComment")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Comment.class))),
-            @ApiResponse(responseCode = "404", description = "Not Found")
-    })
-    @GetMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<Comment> getComment(@PathVariable Integer adId,
-                                              @PathVariable Integer commentId) {
-        return ResponseEntity.ok(commentService.getComment(adId, commentId));
-    }
-
-    @Operation(summary = "updateComment")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Comment.class))),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "Not Found")
-    })
-    @PatchMapping("/{adId}/comments/{commentId}")
-    public ResponseEntity<Comment> updateComments(@PathVariable Integer adId,
-                                                  @PathVariable Integer commentId,
-                                                  @RequestBody Comment comment,
-                                                  Authentication authentication) {
-
-        if(!verificationUserService.verifyUsersCommentOrAdmin(commentId, authentication)){
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        return ResponseEntity.ok(commentService.updateComment(adId, commentId, comment, authentication.getName()));
-    }
-
-    @Operation(summary = "removeAds")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Ads.class))),
-            @ApiResponse(responseCode = "204", description = "No Content"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "Not Found")
-    })
+    @Operation(summary = "Метод для удаления объявления, размещенного на платформе", description = "Позволяет удалить объявление, размещенное на платформе")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeAds(@PathVariable Integer id,
-                                          Authentication authentication) {
-
-        if(!verificationUserService.verifyUsersAdsOrAdmin(id, authentication)){
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        return adsService.deleteAds(id);
+    public void removeAds(@PathVariable(required = true) Integer id) {
+        logger.info(REMOVE_ADS_MESSAGE_LOGGER_CONTROLLER, id);
     }
 
-       @Operation(summary = "updateAds")
+    /**
+     * Этот метод позволяет изменить информацию об объявлении, размещенного на платформе
+     *
+     * @param id        идентификатор изменяемого объявления
+     * @param createAds объявление
+     * @return Возвращает измененное объявление на платформе
+     */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Ads.class))),
-            @ApiResponse(responseCode = "204", description = "No Content"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized"),
-            @ApiResponse(responseCode = "403", description = "Forbidden"),
-            @ApiResponse(responseCode = "404", description = "Not Found"),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Ads.class))),
+            @ApiResponse(responseCode = "401", description = "Неавторизированный пользователь"),
+            @ApiResponse(responseCode = "403", description = "Запрещенное объявление"),
+            @ApiResponse(responseCode = "404", description = "Не найденное объявление")
     })
+    @Operation(summary = "Метод для изменения информации об объявления, размещенного на платформе", description = "Позволяет изменить информацию об объявлении, размещенном на платформе")
     @PatchMapping("/{id}")
-    public ResponseEntity<Ads> updateAds(@PathVariable Integer id,
-                                         @RequestBody CreateAds createAds,
-                                         Authentication authentication) {
-
-        if(!verificationUserService.verifyUsersAdsOrAdmin(id, authentication)){
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        return ResponseEntity.ok(adsService.updateAds(id, createAds));
+    public Ads updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAds createAds) {
+        logger.info(UPDATE_ADS_MESSAGE_LOGGER_CONTROLLER, id, createAds);
+        return new Ads();
     }
 
-    @Operation(summary = "updateAdsPoster")
+    /**
+     * Этот метод позволяет получить объявление авторизированного пользователя, размещенного на платформе
+     *
+     * @param responseWrapperAds объявления
+     * @return Возвращает объявления авторизированного пользователя, размещенного на платформе
+     */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(
-                    mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
-                    array = @ArraySchema(schema = @Schema(implementation = byte[].class)))),
-            @ApiResponse(responseCode = "404", description = "Not Found")})
-    @PatchMapping(value = "{id}/image",
-            produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE},
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<byte[]> updatePoster(@PathVariable("id") Integer adsId,
-                                               @RequestPart MultipartFile image,
-                                               Authentication authentication) throws IOException {
-
-        if(!verificationUserService.verifyUsersAdsOrAdmin(adsId, authentication)){
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-
-        Pair<byte[], String> pair = adsService.updatePosterOfAds(adsId, image);
-        return read(pair);
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ResponseWrapperAds.class))),
+            @ApiResponse(responseCode = "401", description = "Неавторизированный пользователь"),
+            @ApiResponse(responseCode = "403", description = "Запрещенное объявление")
+    })
+    @Operation(summary = "Метод для получения объявления авторизированного пользователя, размещенного на платформе", description = "Позволяет получить объявление авторизированного пользователя, размещенного на платформе")
+    @GetMapping("/me")
+    public ResponseWrapperAds getAdsMe(ResponseWrapperAds responseWrapperAds) {
+        logger.info(GET_ADS_ME_MESSAGE_LOGGER_CONTROLLER, responseWrapperAds);
+        return new ResponseWrapperAds();
     }
 
-    @Operation(
-            summary = "getPoster",
-            description = "Возвращает данные постера для объявления",
-            tags = {"Изображения"})
+    /**
+     * Этот метод позволяет изменить изображение у объявления, размещенного на платформе
+     *
+     * @param id    идентификатор
+     * @param image ссылка на новое изображение
+     */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = byte[].class)))),
-            @ApiResponse(responseCode = "404", description = "Not Found")})
-    @GetMapping(value = "{adsId}/image", produces = {MediaType.APPLICATION_OCTET_STREAM_VALUE})
-    public ResponseEntity<byte[]> getPoster(
-            @Parameter(in = ParameterIn.PATH, description = "ID объявления")
-            @PathVariable("adsId") Integer idAds) {
-        Pair<byte[], String> pair = adsService.getPoster(idAds);
-        return read(pair);
-    }
-
-    private ResponseEntity<byte[]> read(Pair<byte[], String> pair) {
-        return ResponseEntity.ok()
-                .contentLength(pair.getFirst().length)
-                .contentType(MediaType.parseMediaType(pair.getSecond()))
-                .body(pair.getFirst());
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "404", description = "Не найденное изображение у объявления")
+    })
+    @Operation(summary = "Метод для изменения изображения для объявления, размещенного на платформе", description = "Позволяет изменить изображение для объявления, размещенного на платформе")
+    @PatchMapping("/{id}/image")
+    public void updateImage(@PathVariable(required = true) Integer id, @RequestBody String image) {
+        logger.info(UPDATE_IMAGE_MESSAGE_LOGGER_CONTROLLER, id, image);
     }
 }
