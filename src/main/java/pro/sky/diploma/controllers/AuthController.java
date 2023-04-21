@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import pro.sky.diploma.dto.LoginReq;
 import pro.sky.diploma.dto.RegisterReq;
 import pro.sky.diploma.dto.Role;
-import pro.sky.diploma.services.AuthService;
+import pro.sky.diploma.service.AuthService;
+
 
 import static pro.sky.diploma.dto.Role.USER;
 
