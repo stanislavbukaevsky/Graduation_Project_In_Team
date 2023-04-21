@@ -1,12 +1,13 @@
 package pro.sky.diploma.dto;
 
 import lombok.Data;
+import lombok.Data;
 
 /**
  * Класс-DTO для описания объявлений на платформе
  */
 @Data
-public class Ads {
+public class AdsDTO {
     private Integer author;
     private String image;
     private Integer pk;

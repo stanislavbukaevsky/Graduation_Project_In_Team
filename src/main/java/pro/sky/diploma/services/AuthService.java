@@ -1,7 +1,6 @@
 package pro.sky.diploma.services;
 
-import pro.sky.diploma.dto.RegisterReq;
-import pro.sky.diploma.dto.Role;
+import pro.sky.diploma.dto.RegisterReqDTO;
 
 /**
  * Сервис-интерфейс для авторизации и регистрации пользователей на платформе.
@@ -11,18 +10,15 @@ public interface AuthService {
     /**
      * Сигнатура метода авторизации пользователей на платформе
      *
-     * @param userName имя пользователя
+     * @param username имя пользователя
      * @param password пароль пользователя
-     * @return Возвращает авторизированного пользователя, если такой существует
      */
-    boolean login(String userName, String password);
+    void login(String username, String password);
 
     /**
      * Сигнатура метода регистрации новых пользователей на платформе
      *
      * @param registerReq класс-DTO для регистрации пользователя на платформе
-     * @param role        роль пользователя
-     * @return Возвращает зарегистрированного пользователя
      */
-    boolean register(RegisterReq registerReq, Role role);
+    void register(RegisterReqDTO registerReq);
 }
