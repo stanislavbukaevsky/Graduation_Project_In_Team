@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pro.sky.diploma.dto.Comment;
@@ -15,7 +16,7 @@ import pro.sky.diploma.dto.Comment;
 @RequestMapping("/ads")
 @AllArgsConstructor
 @Tag(name = "Комментарии", description = "Позволяет управлять комментариями к объявлениям")
-public class AdsController {
+public class CommentController {
     /**
      * Метод получения комментариев по id объявления
      *
@@ -24,7 +25,7 @@ public class AdsController {
      */
     @Operation(summary = "Получить комментарии объявления")
     @GetMapping("/{id}/comments")
-    public Comment getCommentById(@Parameter(description = "Идентификатор объявления") @PathVariable Long id) {
+    public Comment getCommentById(@Parameter(description = "Идентификатор объявления") @PathVariable int id) {
         return new Comment();
     }
 
@@ -36,7 +37,8 @@ public class AdsController {
      */
     @Operation(summary = "Добавить комментарий к объявлению")
     @PostMapping("/{id}/comments")
-    public Comment addComment(@RequestBody Comment comment, @Parameter(description = "Идентификатор объявления") @PathVariable Long id) {
+    public Comment addComment(@RequestBody Comment comment,
+                              @Parameter(description = "Идентификатор объявления") @PathVariable int id) {
         return new Comment();
     }
 
@@ -49,10 +51,18 @@ public class AdsController {
      */
     @Operation(summary = "Удалить комментарий")
     @DeleteMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<Object> deleteComment(@Parameter(description = "Идентификатор объявления") @PathVariable Long adId,
-                                                @Parameter(description = "Идентификатор коммента") @PathVariable Long commentId) {
+    public ResponseEntity<String> deleteComment(@Parameter(description = "Идентификатор объявления") @PathVariable int adId,
+                                                @Parameter(description = "Идентификатор коммента") @PathVariable int commentId) {
         //commentService.deleteComment(id);
-        return ResponseEntity.ok().build();
+        if (true){ //404
+            return new ResponseEntity<>("Коммент не найден", HttpStatus.NOT_FOUND);
+        }
+        else if (false){ //403
+            return new ResponseEntity<>("Доступ запрещен", HttpStatus.FORBIDDEN);
+        } else if (true){ //401
+            return new ResponseEntity<>("Необходимо войти в учётную запись для доступа", HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<>("Коммент удалён", HttpStatus.OK); //200
     }
 
     /**
@@ -65,9 +75,9 @@ public class AdsController {
      */
     @Operation(summary = "Обновить комментарий")
     @PatchMapping("{adId}/comments/{commentId}")
-    public Comment updateComment(@Parameter(description = "Идентификатор объявления") @PathVariable Long adId,
+    public Comment updateComment(@Parameter(description = "Идентификатор объявления") @PathVariable int adId,
                                  @RequestBody Comment comment,
-                                 @Parameter(description = "Идентификатор коммента") @PathVariable Long commentId) {
+                                 @Parameter(description = "Идентификатор коммента") @PathVariable int commentId) {
         return new Comment();
     }
 }
