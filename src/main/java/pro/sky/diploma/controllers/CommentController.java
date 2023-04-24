@@ -43,9 +43,9 @@ public class CommentController {
     })
     @Operation(summary = "Получить комментарии объявления")
     @GetMapping("/{id}/comments")
-    public ResponseWrapperComment getCommentById(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
+    public ResponseEntity<ResponseWrapperComment> getCommentById(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
         logger.info(GET_COMMENT_BY_ID_MESSAGE_LOGGER_CONTROLLER, id);
-        return new ResponseWrapperComment();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -62,10 +62,10 @@ public class CommentController {
     })
     @Operation(summary = "Добавить комментарий к объявлению")
     @PostMapping("/{id}/comments")
-    public Comment addComment(@RequestBody Comment comment,
-                              @Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
+    public ResponseEntity<Comment> addComment(@RequestBody Comment comment,
+                                              @Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
         logger.info(ADD_COMMENT_MESSAGE_LOGGER_CONTROLLER, comment, id);
-        return new Comment();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -113,10 +113,10 @@ public class CommentController {
     })
     @Operation(summary = "Обновить комментарий")
     @PatchMapping("{adId}/comments/{commentId}")
-    public Comment updateComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
-                                 @RequestBody Comment comment,
-                                 @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
+    public ResponseEntity<Comment> updateComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
+                                                 @RequestBody Comment comment,
+                                                 @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
         logger.info(UPDATE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, comment, commentId);
-        return new Comment();
+        return ResponseEntity.ok().build();
     }
 }
