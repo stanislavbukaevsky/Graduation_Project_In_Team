@@ -35,7 +35,3 @@
 - Букаевский Станислав - [ссылка на GitHub](https://github.com/stanislavbukaevsky)
 - Лукьянчиков Николай - [ссылка на GitHub](https://github.com/NikolayLukjanchikov)
 - Кочкина Анастасия - [ссылка на GitHub](https://github.com/kochkinaanastasiya)
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/main
