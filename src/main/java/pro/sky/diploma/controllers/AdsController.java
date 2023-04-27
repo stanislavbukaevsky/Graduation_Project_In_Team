@@ -13,12 +13,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pro.sky.diploma.dto.Ads;
-import pro.sky.diploma.dto.CreateAds;
-import pro.sky.diploma.dto.FullAds;
-import pro.sky.diploma.dto.ResponseWrapperAds;
+import pro.sky.diploma.dto.AdsDTO;
+import pro.sky.diploma.dto.CreateAdsDTO;
+import pro.sky.diploma.dto.FullAdsDTO;
+import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
 
-import static pro.sky.diploma.constants.FrontServerUserConstants.FRONT_ADDRESS;
+import static pro.sky.diploma.constants.FrontServerUserConstant.FRONT_ADDRESS;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 
 /**
@@ -38,11 +38,11 @@ public class AdsController {
      * @return Возвращает все опубликованные объявления на платформе
      */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ResponseWrapperAds.class)))
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ResponseWrapperAdsDTO.class)))
     })
     @Operation(summary = "Метод для получения всех объявлений на платформе", description = "Позволяет просмотреть все объявления, размещенные на платформе")
     @GetMapping
-    public ResponseEntity<ResponseWrapperAds> getAllAds() {
+    public ResponseEntity<ResponseWrapperAdsDTO> getAllAds() {
         logger.info(GET_ALL_ADS_MESSAGE_LOGGER_CONTROLLER);
         return ResponseEntity.ok().build();
     }
@@ -55,7 +55,7 @@ public class AdsController {
      * @return Возвращает новое, добавленное объявление на платформу
      */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Объявление добавлено на платформу", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Ads.class))),
+            @ApiResponse(responseCode = "201", description = "Объявление добавлено на платформу", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AdsDTO.class))),
             @ApiResponse(responseCode = "401", description = "Неавторизированный пользователь"),
             @ApiResponse(responseCode = "403", description = "Запрещенное объявление"),
             @ApiResponse(responseCode = "404", description = "Не найденное объявление")
@@ -63,7 +63,7 @@ public class AdsController {
     })
     @Operation(summary = "Метод для добавления объявлений на платформу", description = "Позволяет добавить объявление на платформу")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Ads> addAds(@RequestPart(name = "properties") CreateAds createAds, @RequestPart(name = "image") MultipartFile multipartFile) {
+    public ResponseEntity<AdsDTO> addAds(@RequestPart(name = "properties") CreateAdsDTO createAds, @RequestPart(name = "image") MultipartFile multipartFile) {
         logger.info(ADD_ADS_MESSAGE_LOGGER_CONTROLLER, createAds, multipartFile);
         return ResponseEntity.ok().build();
     }
@@ -75,12 +75,12 @@ public class AdsController {
      * @return Возвращает искомое объявление
      */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FullAds.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = FullAdsDTO.class))),
             @ApiResponse(responseCode = "404", description = "Такого объвления на платформе нет")
     })
     @Operation(summary = "Метод для получения информации об объявлении, размещенного на платформе", description = "Позволяет получить информацию об объявлении, размещенном на платформе")
     @GetMapping("/{id}")
-    public ResponseEntity<FullAds> getAds(@PathVariable(required = true) Integer id) {
+    public ResponseEntity<FullAdsDTO> getAds(@PathVariable(required = true) Integer id) {
         logger.info(GET_ADS_MESSAGE_LOGGER_CONTROLLER, id);
         return ResponseEntity.ok().build();
     }
@@ -97,7 +97,7 @@ public class AdsController {
     })
     @Operation(summary = "Метод для удаления объявления, размещенного на платформе", description = "Позволяет удалить объявление, размещенное на платформе")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Ads> removeAds(@PathVariable(required = true) Integer id) {
+    public ResponseEntity<AdsDTO> removeAds(@PathVariable(required = true) Integer id) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_CONTROLLER, id);
         return ResponseEntity.ok().build();
     }
@@ -110,14 +110,14 @@ public class AdsController {
      * @return Возвращает измененное объявление на платформе
      */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Ads.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = AdsDTO.class))),
             @ApiResponse(responseCode = "401", description = "Неавторизированный пользователь"),
             @ApiResponse(responseCode = "403", description = "Запрещенное объявление"),
             @ApiResponse(responseCode = "404", description = "Не найденное объявление")
     })
     @Operation(summary = "Метод для изменения информации об объявления, размещенного на платформе", description = "Позволяет изменить информацию об объявлении, размещенном на платформе")
     @PatchMapping("/{id}")
-    public ResponseEntity<Ads> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAds createAds) {
+    public ResponseEntity<AdsDTO> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAdsDTO createAds) {
         logger.info(UPDATE_ADS_MESSAGE_LOGGER_CONTROLLER, id, createAds);
         return ResponseEntity.ok().build();
     }
@@ -128,13 +128,13 @@ public class AdsController {
      * @return Возвращает объявления авторизированного пользователя, размещенного на платформе
      */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ResponseWrapperAds.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ResponseWrapperAdsDTO.class))),
             @ApiResponse(responseCode = "401", description = "Неавторизированный пользователь"),
             @ApiResponse(responseCode = "403", description = "Запрещенное объявление")
     })
     @Operation(summary = "Метод для получения объявления авторизированного пользователя, размещенного на платформе", description = "Позволяет получить объявление авторизированного пользователя, размещенного на платформе")
     @GetMapping("/me")
-    public ResponseEntity<ResponseWrapperAds> getAdsMe() {
+    public ResponseEntity<ResponseWrapperAdsDTO> getAdsMe() {
         logger.info(GET_ADS_ME_MESSAGE_LOGGER_CONTROLLER);
         return ResponseEntity.ok().build();
     }

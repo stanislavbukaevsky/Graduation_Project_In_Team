@@ -6,7 +6,7 @@ import lombok.Data;
  * Класс-DTO с полной контактной информацией о пользователе, размещающим объявление
  */
 @Data
-public class FullAds {
+public class FullAdsDTO {
     private Integer pk;
     private String authorFirstName;
     private String authorLastName;

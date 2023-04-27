@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Ads app API Documentation
+  title: AdsDTO app API Documentation
   version: '1.0'
 servers:
   - url: http://localhost:8080
