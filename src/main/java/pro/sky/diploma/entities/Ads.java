@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Класс-сущность для всех объявлений, опубликованных на платформе
@@ -28,4 +29,11 @@ public class Ads {
     private Integer price;
     @Column(name = "date_time")
     private LocalDateTime dateTime;
+    @OneToMany(mappedBy = "ads", cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    private List<Comment> comments;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    @OneToOne(mappedBy = "ads", cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    private Image image;
 }

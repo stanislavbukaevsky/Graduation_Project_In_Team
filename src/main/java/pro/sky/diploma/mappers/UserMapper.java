@@ -18,8 +18,8 @@ public interface UserMapper {
      * @param user сущность пользователя
      * @return Возвращает сконвертированную DTO пользователя, зарегистрированного на платформе
      */
-    @Mapping(source = "phoneNumber", target = "phone")
     @Mapping(source = "id", target = "id")
+    @Mapping(source = "phoneNumber", target = "phone")
     @Mapping(source = "user.image.filePath", target = "image")
     UserDTO importEntityToDTO(User user);
 }

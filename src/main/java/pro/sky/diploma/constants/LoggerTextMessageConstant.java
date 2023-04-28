@@ -27,4 +27,6 @@ public class LoggerTextMessageConstant {
     public static final String REGISTER_MESSAGE_LOGGER_SERVICE = "Вызван метод регистрации нового пользователя на платформе в сервисе. Зарегистрированный пользователь: {}. Роль пользователя: {}";
     public static final String GET_USER_MESSAGE_LOGGER_SERVICE = "Вызван метод для просмотра информации об авторизированном пользователе на платформе в сервисе. Ник пользователя: {}";
     public static final String UPDATE_USER_MESSAGE_LOGGER_SERVICE = "Вызван метод для изменения информации об авторизированном пользователе на платформе в сервисе. Пользователь: {}";
+    public static final String UPDATE_COMMENT_MESSAGE_LOGGER_SERVICE = "Вызван метод для изменения комментария опубликованного на платформе в сервисе. Идентификатор объявления: {}. Комментарий: {}. Идентификатор комментария: {}";
+    public static final String DELETE_COMMENT_MESSAGE_LOGGER_SERVICE = "Вызван метод для удаления комментария опубликованного на платформе в сервисе. Идентификатор объявления: {}. Идентификатор комментария: {}";
 }

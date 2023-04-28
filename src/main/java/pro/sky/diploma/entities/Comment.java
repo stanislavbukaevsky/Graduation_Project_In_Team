@@ -24,4 +24,10 @@ public class Comment {
     private String text;
     @Column(name = "date_time")
     private LocalDateTime dateTime;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    @ManyToOne
+    @JoinColumn(name = "ads_id")
+    private Ads ads;
 }

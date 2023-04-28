@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import pro.sky.diploma.entities.Comment;
 
+import java.util.Optional;
+
 /**
  * Интерфейс-репозиторий для работы с методами всех комментариев, опубликованных на платформе.
  * Наследуется от интерфейса {@link JpaRepository}. Параметры: <br>
@@ -12,4 +14,11 @@ import pro.sky.diploma.entities.Comment;
  */
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
+    /**
+     * Этот метод ищет комментарии по его идентификатору
+     *
+     * @param id идентификатор комментария
+     * @return Возвращает найденный комментарий по его идентификатору
+     */
+    Optional<Comment> findCommentById(Long id);
 }

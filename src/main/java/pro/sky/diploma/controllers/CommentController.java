@@ -10,12 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pro.sky.diploma.dto.CommentDTO;
 import pro.sky.diploma.dto.ResponseWrapperCommentDTO;
+import pro.sky.diploma.services.CommentService;
 
 import static pro.sky.diploma.constants.FrontServerUserConstant.FRONT_ADDRESS;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
@@ -30,6 +30,7 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 @Tag(name = "Комментарии", description = "Позволяет управлять комментариями к объявлениям")
 public class CommentController {
     private final Logger logger = LoggerFactory.getLogger(CommentController.class);
+    private final CommentService commentService;
 
     /**
      * Метод получения комментариев по id объявления
@@ -83,26 +84,18 @@ public class CommentController {
     })
     @Operation(summary = "Удалить комментарий")
     @DeleteMapping("{adId}/comments/{commentId}")
-    public ResponseEntity<String> deleteComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
-                                                @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
-        //commentService.deleteComment(id);
+    public ResponseEntity<CommentDTO> deleteComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
+                                                    @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
         logger.info(DELETE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, commentId);
-        if (true) { //404
-            return new ResponseEntity<>("Коммент не найден", HttpStatus.NOT_FOUND);
-        } else if (false) { //403
-            return new ResponseEntity<>("Доступ запрещен", HttpStatus.FORBIDDEN);
-        } else if (true) { //401
-            return new ResponseEntity<>("Необходимо войти в учётную запись для доступа", HttpStatus.UNAUTHORIZED);
-        }
-        return new ResponseEntity<>("Коммент удалён", HttpStatus.OK); //200
+        return ResponseEntity.ok(commentService.deleteComment(adId, commentId));
     }
 
     /**
      * Метод для изменения комментария
      *
-     * @param adId      идентификатор объявления
-     * @param comment   новый комментарий
-     * @param commentId идентификатор коммента
+     * @param adId       идентификатор объявления
+     * @param commentDTO новый комментарий
+     * @param commentId  идентификатор коммента
      * @return возвращает изменённый комментарий
      */
     @ApiResponses(value = {
@@ -114,9 +107,9 @@ public class CommentController {
     @Operation(summary = "Обновить комментарий")
     @PatchMapping("{adId}/comments/{commentId}")
     public ResponseEntity<CommentDTO> updateComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
-                                                    @RequestBody CommentDTO comment,
+                                                    @RequestBody CommentDTO commentDTO,
                                                     @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
-        logger.info(UPDATE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, comment, commentId);
-        return ResponseEntity.ok().build();
+        logger.info(UPDATE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, commentDTO, commentId);
+        return ResponseEntity.ok(commentService.updateComment(adId, commentDTO, commentId));
     }
 }
