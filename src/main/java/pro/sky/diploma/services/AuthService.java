@@ -1,6 +1,6 @@
 package pro.sky.diploma.services;
 
-import pro.sky.diploma.dto.RegisterReq;
+import pro.sky.diploma.dto.RegisterReqDTO;
 import pro.sky.diploma.dto.Role;
 
 /**
@@ -24,5 +24,5 @@ public interface AuthService {
      * @param role        роль пользователя
      * @return Возвращает зарегистрированного пользователя
      */
-    boolean register(RegisterReq registerReq, Role role);
+    boolean register(RegisterReqDTO registerReq, Role role);
 }

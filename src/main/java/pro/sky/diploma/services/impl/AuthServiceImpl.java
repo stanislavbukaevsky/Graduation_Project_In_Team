@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-import pro.sky.diploma.dto.RegisterReq;
+import pro.sky.diploma.dto.RegisterReqDTO;
 import pro.sky.diploma.dto.Role;
 import pro.sky.diploma.services.AuthService;
 
@@ -15,7 +15,7 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.LOGIN_MESSAGE_
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.REGISTER_MESSAGE_LOGGER_SERVICE;
 
 /**
- * Сервис-класс для авторизации и регистрации пользователей на платформе.
+ * Сервис-класс с бизнес-логикой для авторизации и регистрации пользователей на платформе.
  * Реализует интерфейс {@link AuthService}
  */
 @Service
@@ -46,25 +46,25 @@ public class AuthServiceImpl implements AuthService {
     return encoder.matches(password, userDetails.getPassword());
   }
 
-  /**
-   * Этот метод реализует регистрацию новых пользователей на платформе
-   *
-   * @param registerReq класс-DTO для регистрации пользователя на платформе
-   * @param role        роль пользователя
-   * @return Возвращает зарегистрированного пользователя
-   */
-  @Override
-  public boolean register(RegisterReq registerReq, Role role) {
-    logger.info(REGISTER_MESSAGE_LOGGER_SERVICE, registerReq, role);
-    if (manager.userExists(registerReq.getUsername())) {
-      return false;
-    }
-    manager.createUser(
-            User.builder()
-                    .passwordEncoder(this.encoder::encode)
-                    .password(registerReq.getPassword())
-                    .username(registerReq.getUsername())
-                    .roles(role.name())
+    /**
+     * Этот метод реализует регистрацию новых пользователей на платформе
+     *
+     * @param registerReq класс-DTO для регистрации пользователя на платформе
+     * @param role        роль пользователя
+     * @return Возвращает зарегистрированного пользователя
+     */
+    @Override
+    public boolean register(RegisterReqDTO registerReq, Role role) {
+        logger.info(REGISTER_MESSAGE_LOGGER_SERVICE, registerReq, role);
+        if (manager.userExists(registerReq.getUsername())) {
+            return false;
+        }
+        manager.createUser(
+                User.builder()
+                        .passwordEncoder(this.encoder::encode)
+                        .password(registerReq.getPassword())
+                        .username(registerReq.getUsername())
+                        .roles(role.name())
                     .build());
     return true;
   }

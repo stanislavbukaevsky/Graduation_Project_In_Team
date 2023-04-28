@@ -8,7 +8,7 @@ import java.util.List;
  * Класс-DTO поиска объявлений на платформе
  */
 @Data
-public class ResponseWrapperAds {
+public class ResponseWrapperAdsDTO {
     private Integer count;
-    private List<Ads> results;
+    private List<AdsDTO> results;
 }

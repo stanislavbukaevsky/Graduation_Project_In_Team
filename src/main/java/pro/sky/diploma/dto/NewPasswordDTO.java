@@ -6,7 +6,7 @@ import lombok.Data;
  * Класс-DTO для смены пароля доступа на платформу
  */
 @Data
-public class NewPassword {
+public class NewPasswordDTO {
     private String currentPassword;
     private String newPassword;
 }

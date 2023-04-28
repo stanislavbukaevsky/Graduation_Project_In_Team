@@ -6,7 +6,7 @@ import lombok.Data;
  * Класс-DTO для всех пользователей зарегистрированных на платформе
  */
 @Data
-public class User {
+public class UserDTO {
     private Integer id;
     private String email;
     private String firstName;
