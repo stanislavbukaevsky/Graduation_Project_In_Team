@@ -21,4 +21,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * @return Возвращает найденный комментарий по его идентификатору
      */
     Optional<Comment> findCommentById(Long id);
+
+    /**
+     * Этот метод ищет комментарии по идентификатору объявления и по идентификатору комментария
+     *
+     * @param adId      идентификатор объявления
+     * @param commentId идентификатор комментария
+     * @return Возвращает найденный комментарий по идентификатору объявления и комментария
+     */
+    Optional<Comment> findAdsByIdAndId(Long adId, Long commentId);
 }

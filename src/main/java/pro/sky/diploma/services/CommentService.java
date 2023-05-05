@@ -1,6 +1,7 @@
 package pro.sky.diploma.services;
 
 import pro.sky.diploma.dto.CommentDTO;
+import pro.sky.diploma.dto.ResponseWrapperCommentDTO;
 import pro.sky.diploma.exceptions.CommentNotFoundException;
 
 /**
@@ -8,6 +9,23 @@ import pro.sky.diploma.exceptions.CommentNotFoundException;
  * В этом интерфейсе прописана только сигнатура методов без реализации
  */
 public interface CommentService {
+    /**
+     * Сигнатура метода для получения комментариев по id объявления
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает комментарий по идентификатору объявления
+     */
+    ResponseWrapperCommentDTO getCommentById(Integer id);
+
+    /**
+     * Сигнатура метода добавления комментариев к объявлению по их идентификатору
+     *
+     * @param commentDTO тело комментария
+     * @param id         идентификатор объявления
+     * @return Возвращает добавленный комментарий по идентификатору объявления
+     */
+    CommentDTO addComment(CommentDTO commentDTO, Integer id);
+
     /**
      * Сигнатура метода для удаления комментария, опубликованного на платформе.
      *

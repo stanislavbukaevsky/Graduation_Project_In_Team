@@ -21,7 +21,7 @@ import pro.sky.diploma.dto.RegisterReqDTO;
 import pro.sky.diploma.dto.Role;
 import pro.sky.diploma.services.AuthService;
 
-import static pro.sky.diploma.constants.FrontServerUserConstant.FRONT_ADDRESS;
+import static pro.sky.diploma.constants.FrontServerUserConstant.*;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.LOGIN_MESSAGE_LOGGER_CONTROLLER;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.REGISTER_MESSAGE_LOGGER_CONTROLLER;
 import static pro.sky.diploma.dto.Role.USER;
@@ -50,7 +50,7 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "Не найденный пользователь")
     })
     @Operation(summary = "Метод авторизации пользователей на платформе", description = "Позволяет авторизироваться пользователю на платформе")
-    @PostMapping("/login")
+    @PostMapping(POST_MAPPING_LOGIN_AUTH_CONTROLLER)
     public ResponseEntity<?> login(@RequestBody LoginReqDTO req) {
         logger.info(LOGIN_MESSAGE_LOGGER_CONTROLLER, req);
         if (authService.login(req.getUsername(), req.getPassword())) {
@@ -75,7 +75,7 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "Не найденный пользователь")
     })
     @Operation(summary = "Метод регистрации пользователей на платформе", description = "Позволяет зарегистрироваться новому пользователю на платформе")
-    @PostMapping("/register")
+    @PostMapping(POST_MAPPING_REGISTER_AUTH_CONTROLLER)
     public ResponseEntity<?> register(@RequestBody RegisterReqDTO req) {
         logger.info(REGISTER_MESSAGE_LOGGER_CONTROLLER, req);
         Role role = req.getRole() == null ? USER : req.getRole();
