@@ -17,6 +17,8 @@ import pro.sky.diploma.dto.AdsDTO;
 import pro.sky.diploma.dto.CreateAdsDTO;
 import pro.sky.diploma.dto.FullAdsDTO;
 import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
+import pro.sky.diploma.services.AdsService;
+import pro.sky.diploma.services.impl.AdsServiceImpl;
 
 import static pro.sky.diploma.constants.FrontServerUserConstant.FRONT_ADDRESS;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
@@ -31,6 +33,7 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 @Tag(name = "Работа со всеми объявлениями размещенными на платформе", description = "Позволяет управлять методами по работе со всеми объявлениями размещенными на платформе")
 public class AdsController {
     private final Logger logger = LoggerFactory.getLogger(AdsController.class);
+    private final AdsServiceImpl adsService;
 
     /**
      * Этот метод позволяет получить и просмотреть все объявления, опубликованные на платформе
@@ -44,6 +47,8 @@ public class AdsController {
     @GetMapping
     public ResponseEntity<ResponseWrapperAdsDTO> getAllAds() {
         logger.info(GET_ALL_ADS_MESSAGE_LOGGER_CONTROLLER);
+        adsService.findAllAds();
+
         return ResponseEntity.ok().build();
     }
 
