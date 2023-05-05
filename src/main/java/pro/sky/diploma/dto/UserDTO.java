@@ -16,6 +16,11 @@ public class UserDTO {
     private String phone;
     private Image image;
 
+    /**
+     * Создаёт {@link UserDTO} из {@link User}
+     * @param user Пользователь на входе
+     * @return возвращает DTO пользователя
+     */
     public static UserDTO fromUser(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
@@ -27,6 +32,10 @@ public class UserDTO {
         return userDTO;
     }
 
+    /**
+     * Создаёт объект {@link User} из текущего {@link UserDTO}
+     * @return {@link UserDTO}
+     */
        public User toUser() {
            User user = new User();
            user.setId(this.getId());

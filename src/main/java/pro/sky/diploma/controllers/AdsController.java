@@ -47,8 +47,7 @@ public class AdsController {
     @GetMapping
     public ResponseEntity<ResponseWrapperAdsDTO> getAllAds() {
         logger.info(GET_ALL_ADS_MESSAGE_LOGGER_CONTROLLER);
-        adsService.findAllAds();
-
+        adsService.getAllAds();
         return ResponseEntity.ok().build();
     }
 

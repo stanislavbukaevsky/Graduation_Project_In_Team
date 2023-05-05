@@ -19,7 +19,11 @@ public class AdsDTO {
     private String title;
     private UserDTO user;
 
-
+    /**
+     * Создаёт {@link AdsDTO} из {@link Ads}
+     * @param ads на входе {@link Ads}
+     * @return возвращает {@link AdsDTO}
+     */
     public static AdsDTO fromAds(Ads ads) {
         AdsDTO adsDTO = new AdsDTO();
         adsDTO.setAuthor(UserDTO.fromUser(ads.getUser()).getId());
@@ -31,6 +35,10 @@ public class AdsDTO {
         return adsDTO;
     }
 
+    /**
+     * Создаёт объявление из DTO объявления
+     * @return {@link Ads}
+     */
     public Ads toAds() {
         Ads ads = new Ads();
         ads.setId(this.getPk());
