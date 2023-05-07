@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.Ads;
 import pro.sky.diploma.dto.CreateAds;
 import pro.sky.diploma.dto.FullAds;
@@ -40,16 +42,16 @@ public class AdsController {
     })
     @Operation(summary = "Метод для получения всех объявлений на платформе", description = "Позволяет просмотреть все объявления, размещенные на платформе")
     @GetMapping
-    public ResponseWrapperAds getAllAds() {
+    public ResponseEntity<ResponseWrapperAds> getAllAds() {
         logger.info(GET_ALL_ADS_MESSAGE_LOGGER_CONTROLLER);
-        return new ResponseWrapperAds();
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Этот метод позволяет добавлять новые объявления на платформу
      *
-     * @param createAds добавляемое объявление
-     * @param image     ссылка на изображение
+     * @param createAds     добавляемое объявление
+     * @param multipartFile изображение
      * @return Возвращает новое, добавленное объявление на платформу
      */
     @ApiResponses(value = {
@@ -60,10 +62,10 @@ public class AdsController {
 
     })
     @Operation(summary = "Метод для добавления объявлений на платформу", description = "Позволяет добавить объявление на платформу")
-    @PostMapping
-    public Ads addAds(CreateAds createAds, String image) {
-        logger.info(ADD_ADS_MESSAGE_LOGGER_CONTROLLER, createAds, image);
-        return new Ads();
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Ads> addAds(@RequestPart(name = "properties") CreateAds createAds, @RequestPart(name = "image") MultipartFile multipartFile) {
+        logger.info(ADD_ADS_MESSAGE_LOGGER_CONTROLLER, createAds, multipartFile);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -78,9 +80,9 @@ public class AdsController {
     })
     @Operation(summary = "Метод для получения информации об объявлении, размещенного на платформе", description = "Позволяет получить информацию об объявлении, размещенном на платформе")
     @GetMapping("/{id}")
-    public FullAds getAds(@PathVariable(required = true) Integer id) {
+    public ResponseEntity<FullAds> getAds(@PathVariable(required = true) Integer id) {
         logger.info(GET_ADS_MESSAGE_LOGGER_CONTROLLER, id);
-        return new FullAds();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -95,8 +97,9 @@ public class AdsController {
     })
     @Operation(summary = "Метод для удаления объявления, размещенного на платформе", description = "Позволяет удалить объявление, размещенное на платформе")
     @DeleteMapping("/{id}")
-    public void removeAds(@PathVariable(required = true) Integer id) {
+    public ResponseEntity<Ads> removeAds(@PathVariable(required = true) Integer id) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_CONTROLLER, id);
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -114,15 +117,14 @@ public class AdsController {
     })
     @Operation(summary = "Метод для изменения информации об объявления, размещенного на платформе", description = "Позволяет изменить информацию об объявлении, размещенном на платформе")
     @PatchMapping("/{id}")
-    public Ads updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAds createAds) {
+    public ResponseEntity<Ads> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAds createAds) {
         logger.info(UPDATE_ADS_MESSAGE_LOGGER_CONTROLLER, id, createAds);
-        return new Ads();
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Этот метод позволяет получить объявление авторизированного пользователя, размещенного на платформе
      *
-     * @param responseWrapperAds объявления
      * @return Возвращает объявления авторизированного пользователя, размещенного на платформе
      */
     @ApiResponses(value = {
@@ -132,24 +134,25 @@ public class AdsController {
     })
     @Operation(summary = "Метод для получения объявления авторизированного пользователя, размещенного на платформе", description = "Позволяет получить объявление авторизированного пользователя, размещенного на платформе")
     @GetMapping("/me")
-    public ResponseWrapperAds getAdsMe(ResponseWrapperAds responseWrapperAds) {
-        logger.info(GET_ADS_ME_MESSAGE_LOGGER_CONTROLLER, responseWrapperAds);
-        return new ResponseWrapperAds();
+    public ResponseEntity<ResponseWrapperAds> getAdsMe() {
+        logger.info(GET_ADS_ME_MESSAGE_LOGGER_CONTROLLER);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Этот метод позволяет изменить изображение у объявления, размещенного на платформе
      *
-     * @param id    идентификатор
-     * @param image ссылка на новое изображение
+     * @param id            идентификатор
+     * @param multipartFile изображение
      */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "404", description = "Не найденное изображение у объявления")
     })
     @Operation(summary = "Метод для изменения изображения для объявления, размещенного на платформе", description = "Позволяет изменить изображение для объявления, размещенного на платформе")
-    @PatchMapping("/{id}/image")
-    public void updateImage(@PathVariable(required = true) Integer id, @RequestBody String image) {
-        logger.info(UPDATE_IMAGE_MESSAGE_LOGGER_CONTROLLER, id, image);
+    @PatchMapping(path = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateImage(@PathVariable(required = true) Integer id, @RequestPart(name = "image") MultipartFile multipartFile) {
+        logger.info(UPDATE_IMAGE_MESSAGE_LOGGER_CONTROLLER, id, multipartFile);
+        return ResponseEntity.ok().build();
     }
 }

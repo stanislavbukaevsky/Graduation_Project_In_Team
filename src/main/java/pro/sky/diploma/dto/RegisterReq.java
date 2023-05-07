@@ -3,7 +3,7 @@ package pro.sky.diploma.dto;
 import lombok.Data;
 
 /**
- * Класс-DTO для регистрации пользователя на плотформе
+ * Класс-DTO для регистрации пользователя на платформе
  */
 @Data
 public class RegisterReq {

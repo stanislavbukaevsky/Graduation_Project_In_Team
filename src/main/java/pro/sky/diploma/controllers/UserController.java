@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.NewPassword;
 import pro.sky.diploma.dto.User;
 
@@ -42,9 +44,9 @@ public class UserController {
     })
     @Operation(summary = "Метод для изменения пароля пользователя зарегистрированного на платформе", description = "Позволяет изменить пароль пользователя зарегистрированного на платформе")
     @PostMapping("/set_password")
-    public NewPassword setPassword(@RequestBody NewPassword newPassword) {
+    public ResponseEntity<NewPassword> setPassword(@RequestBody NewPassword newPassword) {
         logger.info(SET_PASSWORD_MESSAGE_LOGGER_CONTROLLER, newPassword);
-        return new NewPassword();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -61,9 +63,9 @@ public class UserController {
     })
     @Operation(summary = "Метод для просмотра информации об авторизированном пользователе на платформе", description = "Позволяет получить информацию об авторизированном пользователе на платформе")
     @GetMapping("/me")
-    public User getUser(@RequestBody User user) {
+    public ResponseEntity<User> getUser(@RequestBody User user) {
         logger.info(GET_USER_MESSAGE_LOGGER_CONTROLLER, user);
-        return new User();
+        return ResponseEntity.ok().build();
     }
 
     /**
@@ -81,15 +83,15 @@ public class UserController {
     })
     @Operation(summary = "Метод для изменения информации об авторизированном пользователе на платформе", description = "Позволяет изменить информацию об авторизированном пользователе на платформе")
     @PatchMapping("/me")
-    public User updateUser(@RequestBody User user) {
+    public ResponseEntity<User> updateUser(@RequestBody User user) {
         logger.info(UPDATE_USER_MESSAGE_LOGGER_CONTROLLER, user);
-        return new User();
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Этот метод позволяет изменить аватарку у авторизированного пользователя на платформе
      *
-     * @param image ссылка на новую аватарку
+     * @param multipartFile аватарка
      * @return Возвращает пользователя с измененной аватаркой
      */
     @ApiResponses(value = {
@@ -97,9 +99,9 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Не найденна аватарка")
     })
     @Operation(summary = "Метод для изменения аватарки у авторизированного пользователя на платформе", description = "Позволяет изменить аватарку у авторизированного пользователя на платформе")
-    @PatchMapping("/me/image")
-    public User updateUserImage(@RequestBody String image) {
-        logger.info(UPDATE_USER_IMAGE_MESSAGE_LOGGER_CONTROLLER, image);
-        return new User();
+    @PatchMapping(path = "/me/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<User> updateUserImage(@RequestPart(name = "image") MultipartFile multipartFile) {
+        logger.info(UPDATE_USER_IMAGE_MESSAGE_LOGGER_CONTROLLER, multipartFile);
+        return ResponseEntity.ok().build();
     }
 }

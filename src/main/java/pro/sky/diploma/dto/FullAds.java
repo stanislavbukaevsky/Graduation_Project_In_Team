@@ -1,6 +1,5 @@
 package pro.sky.diploma.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -8,22 +7,13 @@ import lombok.Data;
  */
 @Data
 public class FullAds {
-    @JsonProperty("image")
-    private String image;
-    @JsonProperty("authorLastName")
-    private String authorLastName;
-    @JsonProperty("authorFirstName")
+    private Integer pk;
     private String authorFirstName;
-    @JsonProperty("phone")
-    private String phone;
-    @JsonProperty("description")
+    private String authorLastName;
     private String description;
-    @JsonProperty("title")
-    private String title;
-    @JsonProperty("email")
     private String email;
-    @JsonProperty("price")
+    private String image;
+    private String phone;
     private Integer price;
-    @JsonProperty("pk")
-    private Integer id;
+    private String title;
 }
