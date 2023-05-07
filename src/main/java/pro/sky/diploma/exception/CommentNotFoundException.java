@@ -1,11 +1,16 @@
 package pro.sky.diploma.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import java.util.NoSuchElementException;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class CommentNotFoundException extends RuntimeException{
-    public CommentNotFoundException (Integer id) {
-        super("Комментарий с id: " + id + " не найден.");
+/**
+ * Класс-исключение, если комментарий не найден в базе данных. <br>
+ * Наследуется от класса {@link NoSuchElementException}
+ */
+public class CommentNotFoundException extends NoSuchElementException {
+    public CommentNotFoundException() {
+    }
+
+    public CommentNotFoundException(String message) {
+        super(message);
     }
 }

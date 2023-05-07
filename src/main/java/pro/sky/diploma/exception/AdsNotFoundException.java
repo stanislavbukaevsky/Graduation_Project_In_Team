@@ -1,11 +1,17 @@
 package pro.sky.diploma.exception;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import java.util.NoSuchElementException;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class AdsNotFoundException extends RuntimeException {
-    public AdsNotFoundException (Integer id) {
-        super("Объявление с id: " + id + " не найдено.");
+/**
+ * Класс-исключение, если объявление не найдено в базе данных. <br>
+ * Наследуется от класса {@link NoSuchElementException}
+ */
+public class AdsNotFoundException extends NoSuchElementException {
+
+    public AdsNotFoundException() {
+    }
+
+    public AdsNotFoundException(String message) {
+        super(message);
     }
 }

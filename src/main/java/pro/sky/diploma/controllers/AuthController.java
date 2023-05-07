@@ -16,13 +16,12 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pro.sky.diploma.dto.LoginReq;
-import pro.sky.diploma.dto.RegisterReq;
+import pro.sky.diploma.dto.LoginReqDTO;
+import pro.sky.diploma.dto.RegisterReqDTO;
 import pro.sky.diploma.dto.Role;
-import pro.sky.diploma.service.AuthService;
+import pro.sky.diploma.servicies.AuthService;
 
-
-import static pro.sky.diploma.constants.FrontServerUserConstants.FRONT_ADDRESS;
+import static pro.sky.diploma.constants.FrontServerUserConstant.*;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.LOGIN_MESSAGE_LOGGER_CONTROLLER;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.REGISTER_MESSAGE_LOGGER_CONTROLLER;
 import static pro.sky.diploma.dto.Role.USER;
@@ -45,14 +44,14 @@ public class AuthController {
      * @return Возвращает авторизированного пользователя, если такой существует
      */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LoginReq.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = LoginReqDTO.class))),
             @ApiResponse(responseCode = "401", description = "Неавторизированный пользователь"),
             @ApiResponse(responseCode = "403", description = "Запрещенный пользователь"),
             @ApiResponse(responseCode = "404", description = "Не найденный пользователь")
     })
     @Operation(summary = "Метод авторизации пользователей на платформе", description = "Позволяет авторизироваться пользователю на платформе")
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginReq req) {
+    @PostMapping(POST_MAPPING_LOGIN_AUTH_CONTROLLER)
+    public ResponseEntity<?> login(@RequestBody LoginReqDTO req) {
         logger.info(LOGIN_MESSAGE_LOGGER_CONTROLLER, req);
         if (authService.login(req.getUsername(), req.getPassword())) {
             logger.info("login ok");
@@ -70,14 +69,14 @@ public class AuthController {
      * @return Возвращает зарегистрированного пользователя
      */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Пользователь добавлен", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = RegisterReq.class))),
+            @ApiResponse(responseCode = "201", description = "Пользователь добавлен", content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = RegisterReqDTO.class))),
             @ApiResponse(responseCode = "401", description = "Неавторизированный пользователь"),
             @ApiResponse(responseCode = "403", description = "Запрещенный пользователь"),
             @ApiResponse(responseCode = "404", description = "Не найденный пользователь")
     })
     @Operation(summary = "Метод регистрации пользователей на платформе", description = "Позволяет зарегистрироваться новому пользователю на платформе")
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterReq req) {
+    @PostMapping(POST_MAPPING_REGISTER_AUTH_CONTROLLER)
+    public ResponseEntity<?> register(@RequestBody RegisterReqDTO req) {
         logger.info(REGISTER_MESSAGE_LOGGER_CONTROLLER, req);
         Role role = req.getRole() == null ? USER : req.getRole();
         if (authService.register(req, role)) {
