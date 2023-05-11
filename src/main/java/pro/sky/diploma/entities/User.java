@@ -2,6 +2,7 @@ package pro.sky.diploma.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
@@ -16,6 +17,7 @@ import java.util.List;
  */
 @Entity
 @Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
@@ -32,11 +34,13 @@ public class User {
     private String phoneNumber;
     @Column(name = "email", unique = true)
     private String email;
-    @Column(name = "password", length = 50)
+    @Column(name = "password", length = 1000)
     private String password;
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
+    @Column(name = "active")
+    private boolean active;
     @Column(name = "date_time")
     private LocalDateTime dateTime;
     @OneToOne(mappedBy = "user", cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
