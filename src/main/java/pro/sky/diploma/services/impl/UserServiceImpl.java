@@ -3,16 +3,19 @@ package pro.sky.diploma.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import pro.sky.diploma.dto.NewPasswordDTO;
 import pro.sky.diploma.dto.UserDTO;
 import pro.sky.diploma.entities.User;
+import pro.sky.diploma.exceptions.PasswordNotFoundException;
+import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.exceptions.UserNotFoundException;
 import pro.sky.diploma.mappers.UserMapper;
 import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.services.UserService;
 
-import static pro.sky.diploma.constants.ExceptionTextMessageConstant.USER_NOT_FOUND_EXCEPTION;
-import static pro.sky.diploma.constants.ExceptionTextMessageConstant.USER_NOT_FOUND_EXCEPTION_2;
+import static pro.sky.diploma.constants.ExceptionTextMessageConstant.*;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.GET_USER_MESSAGE_LOGGER_SERVICE;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.UPDATE_USER_MESSAGE_LOGGER_SERVICE;
 
@@ -26,6 +29,30 @@ public class UserServiceImpl implements UserService {
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+
+    /**
+     * Реализация метода для изменения пароля зарегистрированного пользователя на платформе.
+     * Этот метод может выбросить исключение {@link UserNotFoundException}, если пользователь не найден.
+     * Также, метод может выбросить исключение {@link PasswordNotFoundException}, если неверно введен пароль пользователя
+     *
+     * @param email           имя пользователя (логин)
+     * @param currentPassword текущий пароль
+     * @param newPassword     новый пароль
+     * @return Возвращает сконвертированную DTO нового пароля пользователя
+     */
+    @Override
+    public NewPasswordDTO setPassword(String email, String currentPassword, String newPassword) {
+        User user = userRepository.findUserByEmail(email).orElseThrow(() ->
+                new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION));
+
+        if (passwordEncoder.matches(currentPassword, passwordEncoder.encode(currentPassword))) {
+            throw new PasswordNotFoundException(PASSWORD_NOT_FOUND_EXCEPTION);
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        User result = userRepository.save(user);
+        return userMapper.importVariablesToDTO(result);
+    }
 
     /**
      * Реализация метода для просмотра информации об авторизированном пользователе на платформе.

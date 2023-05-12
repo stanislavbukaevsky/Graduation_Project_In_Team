@@ -10,6 +10,10 @@ import pro.sky.diploma.repositories.UserRepository;
 
 import static pro.sky.diploma.constants.ExceptionTextMessageConstant.USER_NOT_FOUND_EXCEPTION;
 
+/**
+ * Этот класс используется для того, чтобы создать объект {@link UserSecurity} путем реализации единственного метода
+ * интерфейса {@link UserDetailsService}
+ */
 @Component
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
