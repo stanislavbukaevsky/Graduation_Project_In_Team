@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pro.sky.diploma.dto.CommentDTO;
 import pro.sky.diploma.dto.ResponseWrapperCommentDTO;
@@ -43,6 +44,7 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     @Operation(summary = "Получить комментарии объявления")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping(GET_MAPPING_GET_COMMENT_BY_ID_COMMENT_CONTROLLER)
     public ResponseEntity<ResponseWrapperCommentDTO> getCommentById(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
         logger.info(GET_COMMENT_BY_ID_MESSAGE_LOGGER_CONTROLLER, id);
@@ -63,6 +65,7 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     @Operation(summary = "Добавить комментарий к объявлению")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping(POST_MAPPING_ADD_COMMENT_CONTROLLER)
     public ResponseEntity<CommentDTO> addComment(@RequestBody CommentDTO commentDTO,
                                                  @Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
@@ -84,6 +87,7 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     @Operation(summary = "Удалить комментарий")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping(DELETE_MAPPING_DELETE_COMMENT_CONTROLLER)
     public ResponseEntity<CommentDTO> deleteComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
                                                     @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
@@ -106,6 +110,7 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     @Operation(summary = "Обновить комментарий")
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping(PATCH_MAPPING_UPDATE_COMMENT_CONTROLLER)
     public ResponseEntity<CommentDTO> updateComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
                                                     @RequestBody CommentDTO commentDTO,

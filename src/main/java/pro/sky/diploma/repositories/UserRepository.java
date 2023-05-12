@@ -21,4 +21,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return Возвращает найденного по электронной почте пользователя
      */
     Optional<User> findUserByEmail(String username);
+
+    /**
+     * Этот метод проверяет, есть ли уже имя пользователя в базе данных
+     *
+     * @param email имя пользователя (логин)
+     * @return Возвращает true, если пользователь уже существует в базе данных или false, если его нет
+     */
+    Boolean existsUserByEmail(String email);
 }
