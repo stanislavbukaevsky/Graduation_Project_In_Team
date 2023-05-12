@@ -1,5 +1,6 @@
 package pro.sky.diploma.services;
 
+import pro.sky.diploma.dto.NewPasswordDTO;
 import pro.sky.diploma.dto.UserDTO;
 import pro.sky.diploma.entities.User;
 
@@ -8,6 +9,16 @@ import pro.sky.diploma.entities.User;
  * В этом интерфейсе прописана только сигнатура методов без реализации
  */
 public interface UserService {
+    /**
+     * Сигнатура метода для изменения пароля зарегистрированного пользователя на платформе.
+     *
+     * @param email           имя пользователя (логин)
+     * @param currentPassword текущий пароль
+     * @param newPassword     новый пароль
+     * @return Возвращает сконвертированную DTO нового пароля пользователя
+     */
+    NewPasswordDTO setPassword(String email, String currentPassword, String newPassword);
+
     /**
      * Сигнатура метода для просмотра информации об авторизированном пользователе на платформе
      *

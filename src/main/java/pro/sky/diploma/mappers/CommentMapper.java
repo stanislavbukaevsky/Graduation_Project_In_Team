@@ -24,7 +24,7 @@ public interface CommentMapper {
      * @return Возвращает сконвертированную DTO комментариев, опубликованных на платформе
      */
     @Mapping(source = "comment.user.id", target = "author")
-    @Mapping(source = "comment.user.image.filePath", target = "authorImage")
+    @Mapping(source = "comment.user.image.data", target = "authorImage")
     @Mapping(source = "comment.user.firstName", target = "authorFirstName")
     @Mapping(source = "dateTime", target = "createdAt", dateFormat = "dd/MM/yyyy HH:mm:ss.SS")
     @Mapping(source = "id", target = "pk")
@@ -38,6 +38,16 @@ public interface CommentMapper {
      */
     default Long importDateAndTimeToLong(LocalDateTime dateTime) {
         return dateTime.toInstant(ZoneOffset.ofHours(3)).toEpochMilli();
+    }
+
+    /**
+     * Этот метод конвертирует массив байт в строку
+     *
+     * @param data массив
+     * @return Возвращает массив байт конвертированный в строку
+     */
+    default String importArrayByteToString(byte[] data) {
+        return data.toString();
     }
 
     /**

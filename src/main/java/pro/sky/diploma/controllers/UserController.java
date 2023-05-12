@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.NewPasswordDTO;
@@ -48,10 +50,12 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Не найденный пароль")
     })
     @Operation(summary = "Метод для изменения пароля пользователя зарегистрированного на платформе", description = "Позволяет изменить пароль пользователя зарегистрированного на платформе")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PostMapping(POST_MAPPING_SET_PASSWORD_CONTROLLER)
-    public ResponseEntity<NewPasswordDTO> setPassword(@RequestBody NewPasswordDTO newPassword) {
+    public ResponseEntity<NewPasswordDTO> setPassword(@RequestBody NewPasswordDTO newPassword, Authentication authentication) {
         logger.info(SET_PASSWORD_MESSAGE_LOGGER_CONTROLLER, newPassword);
-        return ResponseEntity.ok().build();
+        NewPasswordDTO resultPassword = userService.setPassword(authentication.getName(), newPassword.getCurrentPassword(), newPassword.getNewPassword());
+        return ResponseEntity.ok(resultPassword);
     }
 
     /**
@@ -67,6 +71,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Не найденный пользователь")
     })
     @Operation(summary = "Метод для просмотра информации об авторизированном пользователе на платформе", description = "Позволяет получить информацию об авторизированном пользователе на платформе")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping(GET_MAPPING_GET_USER_CONTROLLER)
     public ResponseEntity<UserDTO> getUser(@RequestBody UserDTO userDTO) {
         logger.info(GET_USER_MESSAGE_LOGGER_CONTROLLER, userDTO);
@@ -88,6 +93,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Не найденный пользователь")
     })
     @Operation(summary = "Метод для изменения информации об авторизированном пользователе на платформе", description = "Позволяет изменить информацию об авторизированном пользователе на платформе")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PatchMapping(PATCH_MAPPING_UPDATE_USER_CONTROLLER)
     public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO userDTO) {
         logger.info(UPDATE_USER_MESSAGE_LOGGER_CONTROLLER, userDTO);
@@ -105,6 +111,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Не найденна аватарка")
     })
     @Operation(summary = "Метод для изменения аватарки у авторизированного пользователя на платформе", description = "Позволяет изменить аватарку у авторизированного пользователя на платформе")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PatchMapping(path = PATCH_MAPPING_UPDATE_USER_IMAGE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> updateUserImage(@RequestPart(name = "image") MultipartFile multipartFile) {
         logger.info(UPDATE_USER_IMAGE_MESSAGE_LOGGER_CONTROLLER, multipartFile);

@@ -24,7 +24,7 @@ public class LoggerTextMessageConstant {
     public static final String UPDATE_COMMENT_MESSAGE_LOGGER_CONTROLLER = "Вызван метод изменения комментария под объявлением, размещенного на платформе в контроллере. Идентификатор объявления: {}. Комментарий: {}. Идентификатор комментария: {}";
     // Логи для методов в сервисах
     public static final String LOGIN_MESSAGE_LOGGER_SERVICE = "Вызван метод авторизации пользователя на платформе в сервисе. Имя пользователя: {}. Пароль: {}";
-    public static final String REGISTER_MESSAGE_LOGGER_SERVICE = "Вызван метод регистрации нового пользователя на платформе в сервисе. Зарегистрированный пользователь: {}. Роль пользователя: {}";
+    public static final String REGISTER_MESSAGE_LOGGER_SERVICE = "Вызван метод регистрации нового пользователя на платформе в сервисе. Зарегистрированный пользователь: {}";
     public static final String GET_USER_MESSAGE_LOGGER_SERVICE = "Вызван метод для просмотра информации об авторизированном пользователе на платформе в сервисе. Ник пользователя: {}";
     public static final String UPDATE_USER_MESSAGE_LOGGER_SERVICE = "Вызван метод для изменения информации об авторизированном пользователе на платформе в сервисе. Пользователь: {}";
     public static final String GET_COMMENT_BY_ID_COMMENT_MESSAGE_LOGGER_SERVICE = "Вызван метод для получения комментариев по его идентификатору опубликованного на платформе в сервисе. Идентификатор: {}";
