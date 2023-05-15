@@ -9,18 +9,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import pro.sky.diploma.dto.AdsDTO;
-import pro.sky.diploma.dto.CreateAdsDTO;
-import pro.sky.diploma.dto.FullAdsDTO;
-import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
+import pro.sky.diploma.dto.*;
+import pro.sky.diploma.entities.User;
+import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.services.AdsService;
 
 import java.io.IOException;
+import java.util.List;
 
 import static pro.sky.diploma.constants.FrontServerUserConstant.*;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
@@ -36,6 +37,7 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 public class AdsController {
     private final Logger logger = LoggerFactory.getLogger(AdsController.class);
     private final AdsService adsService;
+    private final UserRepository userRepository;
 
     /**
      * Этот метод позволяет получить и просмотреть все объявления, опубликованные на платформе
@@ -72,7 +74,13 @@ public class AdsController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AdsDTO> addAds(@RequestPart(name = "properties") CreateAdsDTO createAds, @RequestPart(name = "image") MultipartFile multipartFile) throws IOException {
         logger.info(ADD_ADS_MESSAGE_LOGGER_CONTROLLER, createAds, multipartFile);
-        return ResponseEntity.ok(adsService.addAds(createAds, multipartFile));
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok(adsService.addAds(createAds, multipartFile));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     /**
@@ -90,7 +98,13 @@ public class AdsController {
     @GetMapping(GET_MAPPING_GET_ADS_CONTROLLER)
     public ResponseEntity<FullAdsDTO> getAds(@PathVariable(required = true) Integer id) {
         logger.info(GET_ADS_MESSAGE_LOGGER_CONTROLLER, id);
-        return ResponseEntity.ok(adsService.getAds(id));
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok(adsService.getAds(id));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     /**
@@ -104,11 +118,17 @@ public class AdsController {
             @ApiResponse(responseCode = "403", description = "Такого объвления на платформе нет")
     })
     @Operation(summary = "Метод для удаления объявления, размещенного на платформе", description = "Позволяет удалить объявление, размещенное на платформе")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @DeleteMapping(DELETE_MAPPING_REMOVE_ADS_CONTROLLER)
     public ResponseEntity<AdsDTO> removeAds(@PathVariable(required = true) Integer id) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_CONTROLLER, id);
-        return ResponseEntity.ok(adsService.removeAds(id));
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok(adsService.removeAds(id));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     /**
@@ -125,11 +145,17 @@ public class AdsController {
             @ApiResponse(responseCode = "404", description = "Не найденное объявление")
     })
     @Operation(summary = "Метод для изменения информации об объявления, размещенного на платформе", description = "Позволяет изменить информацию об объявлении, размещенном на платформе")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PatchMapping(PATCH_MAPPING_UPDATE_ADS_CONTROLLER)
     public ResponseEntity<AdsDTO> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAdsDTO createAds) {
         logger.info(UPDATE_ADS_MESSAGE_LOGGER_CONTROLLER, id, createAds);
-        return ResponseEntity.ok(adsService.updateAds(id, createAds));
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok(adsService.updateAds(id, createAds));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     /**
@@ -147,7 +173,13 @@ public class AdsController {
     @GetMapping(GET_MAPPING_GET_ME_ADS_CONTROLLER)
     public ResponseEntity<ResponseWrapperAdsDTO> getAdsMe() {
         logger.info(GET_ADS_ME_MESSAGE_LOGGER_CONTROLLER);
-        return ResponseEntity.ok(adsService.getAdsMe());
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok(adsService.getAdsMe());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     /**
@@ -165,6 +197,12 @@ public class AdsController {
     @PatchMapping(path = PATCH_MAPPING_UPDATE_IMAGE_CONTROLLER, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> updateImage(@PathVariable(required = true) Integer id, @RequestPart(name = "image") MultipartFile multipartFile) {
         logger.info(UPDATE_IMAGE_MESSAGE_LOGGER_CONTROLLER, id, multipartFile);
-        return ResponseEntity.ok().build();
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok().build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

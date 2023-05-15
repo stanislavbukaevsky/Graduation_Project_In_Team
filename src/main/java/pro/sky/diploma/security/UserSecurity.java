@@ -10,7 +10,6 @@ import pro.sky.diploma.entities.User;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Этот класс предоставляет всю необходимую информацию для построения объекта аутентификации.
@@ -34,11 +33,8 @@ public class UserSecurity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(user.getRole()
-                        .name()
-                        .split(", "))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().name()));
+        return authorities;
     }
 
     @Override
