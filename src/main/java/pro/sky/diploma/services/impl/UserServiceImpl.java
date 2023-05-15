@@ -16,8 +16,7 @@ import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.services.UserService;
 
 import static pro.sky.diploma.constants.ExceptionTextMessageConstant.*;
-import static pro.sky.diploma.constants.LoggerTextMessageConstant.GET_USER_MESSAGE_LOGGER_SERVICE;
-import static pro.sky.diploma.constants.LoggerTextMessageConstant.UPDATE_USER_MESSAGE_LOGGER_SERVICE;
+import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 
 /**
  * Сервис-класс с бизнес-логикой для всех пользователей зарегистрированных на платформе.
@@ -43,10 +42,11 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public NewPasswordDTO setPassword(String email, String currentPassword, String newPassword) {
+        logger.info(SET_PASSWORD_USER_MESSAGE_LOGGER_SERVICE, email, currentPassword, newPassword);
         User user = userRepository.findUserByEmail(email).orElseThrow(() ->
                 new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION));
 
-        if (passwordEncoder.matches(currentPassword, passwordEncoder.encode(currentPassword))) {
+        if (passwordEncoder.matches(passwordEncoder.encode(currentPassword), passwordEncoder.encode(user.getPassword()))) {
             throw new PasswordNotFoundException(PASSWORD_NOT_FOUND_EXCEPTION);
         }
         user.setPassword(passwordEncoder.encode(newPassword));

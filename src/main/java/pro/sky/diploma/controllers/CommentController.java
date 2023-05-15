@@ -10,13 +10,19 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pro.sky.diploma.dto.CommentDTO;
 import pro.sky.diploma.dto.ResponseWrapperCommentDTO;
+import pro.sky.diploma.dto.Role;
+import pro.sky.diploma.entities.User;
+import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.services.CommentService;
+
+import java.util.List;
 
 import static pro.sky.diploma.constants.FrontServerUserConstant.*;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
@@ -32,6 +38,7 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 public class CommentController {
     private final Logger logger = LoggerFactory.getLogger(CommentController.class);
     private final CommentService commentService;
+    private final UserRepository userRepository;
 
     /**
      * Метод получения комментариев по id объявления
@@ -48,7 +55,13 @@ public class CommentController {
     @GetMapping(GET_MAPPING_GET_COMMENT_BY_ID_COMMENT_CONTROLLER)
     public ResponseEntity<ResponseWrapperCommentDTO> getCommentById(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
         logger.info(GET_COMMENT_BY_ID_MESSAGE_LOGGER_CONTROLLER, id);
-        return ResponseEntity.ok(commentService.getCommentById(id));
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok(commentService.getCommentById(id));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     /**
@@ -70,7 +83,13 @@ public class CommentController {
     public ResponseEntity<CommentDTO> addComment(@RequestBody CommentDTO commentDTO,
                                                  @Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
         logger.info(ADD_COMMENT_MESSAGE_LOGGER_CONTROLLER, commentDTO, id);
-        return ResponseEntity.ok(commentService.addComment(commentDTO, id));
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok(commentService.addComment(commentDTO, id));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     /**
@@ -87,12 +106,18 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     @Operation(summary = "Удалить комментарий")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @DeleteMapping(DELETE_MAPPING_DELETE_COMMENT_CONTROLLER)
     public ResponseEntity<CommentDTO> deleteComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
                                                     @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
         logger.info(DELETE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, commentId);
-        return ResponseEntity.ok(commentService.deleteComment(adId, commentId));
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok(commentService.deleteComment(adId, commentId));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     /**
@@ -110,12 +135,18 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден")
     })
     @Operation(summary = "Обновить комментарий")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PatchMapping(PATCH_MAPPING_UPDATE_COMMENT_CONTROLLER)
     public ResponseEntity<CommentDTO> updateComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
                                                     @RequestBody CommentDTO commentDTO,
                                                     @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
         logger.info(UPDATE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, commentDTO, commentId);
-        return ResponseEntity.ok(commentService.updateComment(adId, commentDTO, commentId));
+        List<User> users = userRepository.findAll();
+        for (User user : users) {
+            if (user.getRole().equals(Role.USER) || user.getRole().equals(Role.ADMIN)) {
+                return ResponseEntity.ok(commentService.updateComment(adId, commentDTO, commentId));
+            }
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
