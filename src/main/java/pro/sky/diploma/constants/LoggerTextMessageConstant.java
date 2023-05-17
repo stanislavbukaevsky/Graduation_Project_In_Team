@@ -39,4 +39,6 @@ public class LoggerTextMessageConstant {
     public static final String UPDATE_ADS_MESSAGE_LOGGER_SERVICE = "Вызван метод изменения информации об объявлении, размещенного на платформе в сервисе. Идентификатор изменяемого объявления: {}. Объявление: {}";
     public static final String GET_ADS_ME_MESSAGE_LOGGER_SERVICE = "Вызван метод получения объявления авторизированного пользователя, размещенного на платформе в сервисе";
     public static final String ADD_IMAGE_MESSAGE_LOGGER_SERVICE = "Вызван метод добавления изображений в сервисе. Идентификатор объявления: {}";
+    public static final String CHECK_USERS_ADS_MESSAGE_LOGGER_SERVICE = "Вызван метод проверки авторизированного пользователя, размещающего объявление и пользователя по его роли в сервисе. Идентификатор объявления: {}. Авторизированный пользователь: {}";
+    public static final String CHECK_USERS_COMMENT_MESSAGE_LOGGER_SERVICE = "Вызван метод проверки авторизированного пользователя, размещающего комментарий и пользователя по его роли в сервисе. Идентификатор комментария: {}. Авторизированный пользователь: {}";
 }

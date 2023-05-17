@@ -6,13 +6,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pro.sky.diploma.dto.CommentDTO;
 import pro.sky.diploma.dto.ResponseWrapperCommentDTO;
+import pro.sky.diploma.dto.Role;
 import pro.sky.diploma.entities.Ads;
 import pro.sky.diploma.entities.Comment;
 import pro.sky.diploma.exceptions.AdsNotFoundException;
 import pro.sky.diploma.exceptions.CommentNotFoundException;
+import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.mappers.CommentMapper;
 import pro.sky.diploma.repositories.AdsRepository;
 import pro.sky.diploma.repositories.CommentRepository;
+import pro.sky.diploma.security.UserSecurity;
 import pro.sky.diploma.services.CommentService;
 
 import java.time.LocalDateTime;
@@ -74,19 +77,20 @@ public class CommentServiceImpl implements CommentService {
     /**
      * Реализация метода для удаления комментария, опубликованного на платформе.
      *
-     * @param adId      идентификатор объявления
-     * @param commentId идентификатор комментария
+     * @param adId         идентификатор объявления
+     * @param commentId    идентификатор комментария
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO удаленного комментария
      */
     @Override
-    public CommentDTO deleteComment(Integer adId, Integer commentId) {
+    public CommentDTO deleteComment(Integer adId, Integer commentId, UserSecurity userSecurity) {
         logger.info(DELETE_COMMENT_MESSAGE_LOGGER_SERVICE, adId, commentId);
         Long idAds = Long.valueOf(adId);
         Long idComment = Long.valueOf(commentId);
         Comment comment = commentRepository.findAdsByIdAndId(idAds, idComment).orElseThrow(() ->
                 new CommentNotFoundException(COMMENT_AND_ADS_NOT_FOUND_EXCEPTION));
 
-        if (comment != null) {
+        if (comment != null && checkUsersByComment(commentId, userSecurity)) {
             commentRepository.delete(comment);
         }
         return commentMapper.importEntityToDTO(comment);
@@ -96,22 +100,47 @@ public class CommentServiceImpl implements CommentService {
      * Реализация метода для изменения комментария, опубликованного на платформе.
      * Этот метод может выбросить исключение {@link CommentNotFoundException}, если комментарий не найден
      *
-     * @param adId       идентификатор объявления
-     * @param commentDTO DTO комментария
-     * @param commentId  идентификатор комментария
+     * @param adId         идентификатор объявления
+     * @param commentDTO   DTO комментария
+     * @param commentId    идентификатор комментария
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO измененного комментария
      */
     @Override
-    public CommentDTO updateComment(Integer adId, CommentDTO commentDTO, Integer commentId) {
+    public CommentDTO updateComment(Integer adId, CommentDTO commentDTO, Integer commentId, UserSecurity userSecurity) {
         logger.info(UPDATE_COMMENT_MESSAGE_LOGGER_SERVICE, adId, commentDTO, commentId);
         Long id = Long.valueOf(commentId);
         Comment comment = commentRepository.findCommentById(id).orElse(null);
         if (comment == null) {
             throw new CommentNotFoundException(COMMENT_NOT_FOUND_EXCEPTION);
         }
+        checkUsersByComment(commentId, userSecurity);
         comment.setText(commentDTO.getText());
         comment.setDateTime(LocalDateTime.parse(commentDTO.getCreatedAt().toString()));
         Comment result = commentRepository.save(comment);
         return commentMapper.importEntityToDTO(result);
+    }
+
+    /**
+     * Приватный метод, который проверяет авторизированного пользователя, размещающего комментарий на платформе и пользователя по его роли.
+     * Этот метод может выбросить исключение {@link CommentNotFoundException}, если комментарий не найден.
+     * Также, метод выбрасывает исключение {@link UserNameNotFoundException}, если у пользователя нет доступа для действия
+     *
+     * @param id           идентификатор объявления
+     * @param userSecurity класс, с авторизированными пользователями
+     * @return Возвращает true, если условие выполняется, в противном случае выбрасывает исключение
+     */
+    private boolean checkUsersByComment(Integer id, UserSecurity userSecurity) {
+        logger.info(CHECK_USERS_COMMENT_MESSAGE_LOGGER_SERVICE, id, userSecurity);
+        Long commentId = Long.valueOf(id);
+        String comment = commentRepository.findCommentById(commentId).orElseThrow(() ->
+                new CommentNotFoundException(COMMENT_AND_ADS_NOT_FOUND_EXCEPTION)).getUser().getEmail();
+        boolean checkAuthUser = comment.equals(userSecurity.getUsername());
+        boolean checkAdmin = userSecurity.getAuthorities().stream().anyMatch(us -> us.getAuthority().contains(Role.ADMIN.name()));
+
+        if (!(checkAuthUser || checkAdmin)) {
+            throw new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION_2);
+        }
+        return true;
     }
 }

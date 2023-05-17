@@ -5,15 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pro.sky.diploma.dto.AdsDTO;
-import pro.sky.diploma.dto.CreateAdsDTO;
-import pro.sky.diploma.dto.FullAdsDTO;
-import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
+import pro.sky.diploma.dto.*;
 import pro.sky.diploma.entities.Ads;
 import pro.sky.diploma.entities.Image;
 import pro.sky.diploma.exceptions.AdsNotFoundException;
+import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.mappers.AdsMapper;
 import pro.sky.diploma.repositories.AdsRepository;
+import pro.sky.diploma.security.UserSecurity;
 import pro.sky.diploma.services.AdsService;
 import pro.sky.diploma.services.ImageService;
 
@@ -21,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static pro.sky.diploma.constants.ExceptionTextMessageConstant.ADS_NOT_FOUND_EXCEPTION;
+import static pro.sky.diploma.constants.ExceptionTextMessageConstant.USER_NAME_NOT_FOUND_EXCEPTION_2;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 
 /**
@@ -93,16 +93,17 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Реализация метода для удаления объявлений с платформы по его идентификатору
      *
-     * @param id идентификатор удаляемого объявления
+     * @param id           идентификатор удаляемого объявления
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO удаленного объявления
      */
     @Override
-    public AdsDTO removeAds(Integer id) {
+    public AdsDTO removeAds(Integer id, UserSecurity userSecurity) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_SERVICE, id);
         Long idAds = Long.valueOf(id);
         Ads ads = adsRepository.findAdsById(idAds).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
-        if (ads != null) {
+        if (ads != null && checkUsersByAds(id, userSecurity)) {
             adsRepository.delete(ads);
         }
         AdsDTO adsDTO = adsMapper.importEntityToDTO(ads);
@@ -114,16 +115,18 @@ public class AdsServiceImpl implements AdsService {
      *
      * @param id           идентификатор изменяемого объявления
      * @param createAdsDTO объявление
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO измененного объявления на платформе
      */
     @Override
-    public AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO) {
+    public AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO, UserSecurity userSecurity) {
         logger.info(UPDATE_ADS_MESSAGE_LOGGER_SERVICE, id, createAdsDTO);
         Long idAds = Long.valueOf(id);
         Ads ads = adsRepository.findAdsById(idAds).orElse(null);
         if (ads == null) {
             throw new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION);
         }
+        checkUsersByAds(id, userSecurity);
         ads.setDescription(createAdsDTO.getDescription());
         ads.setPrice(createAdsDTO.getPrice());
         ads.setTitle(createAdsDTO.getTitle());
@@ -149,5 +152,28 @@ public class AdsServiceImpl implements AdsService {
             responseWrapperAdsDTO.setResults(adsDTO);
         }
         return responseWrapperAdsDTO;
+    }
+
+    /**
+     * Приватный метод, который проверяет авторизированного пользователя, размещающего объявление на платформе и пользователя по его роли.
+     * Этот метод может выбросить исключение {@link AdsNotFoundException}, если объявление не найдено.
+     * Также, метод выбрасывает исключение {@link UserNameNotFoundException}, если у пользователя нет доступа для действия
+     *
+     * @param id           идентификатор объявления
+     * @param userSecurity класс, с авторизированными пользователями
+     * @return Возвращает true, если условие выполняется, в противном случае выбрасывает исключение
+     */
+    private boolean checkUsersByAds(Integer id, UserSecurity userSecurity) {
+        logger.info(CHECK_USERS_ADS_MESSAGE_LOGGER_SERVICE, id, userSecurity);
+        Long adsId = Long.valueOf(id);
+        String ads = adsRepository.findAdsById(adsId).orElseThrow(() ->
+                new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION)).getUser().getEmail();
+        boolean checkAuthUser = ads.equals(userSecurity.getUsername());
+        boolean checkAdmin = userSecurity.getAuthorities().stream().anyMatch(us -> us.getAuthority().contains(Role.ADMIN.name()));
+
+        if (!(checkAuthUser || checkAdmin)) {
+            throw new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION_2);
+        }
+        return true;
     }
 }
