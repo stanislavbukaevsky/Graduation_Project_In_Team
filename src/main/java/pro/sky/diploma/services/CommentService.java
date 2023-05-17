@@ -3,6 +3,7 @@ package pro.sky.diploma.services;
 import pro.sky.diploma.dto.CommentDTO;
 import pro.sky.diploma.dto.ResponseWrapperCommentDTO;
 import pro.sky.diploma.exceptions.CommentNotFoundException;
+import pro.sky.diploma.security.UserSecurity;
 
 /**
  * Сервис-интерфейс для всех комментариев, опубликованных на платформе.
@@ -29,20 +30,22 @@ public interface CommentService {
     /**
      * Сигнатура метода для удаления комментария, опубликованного на платформе.
      *
-     * @param adId      идентификатор объявления
-     * @param commentId идентификатор комментария
+     * @param adId         идентификатор объявления
+     * @param commentId    идентификатор комментария
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO удаленного комментария
      */
-    CommentDTO deleteComment(Integer adId, Integer commentId);
+    CommentDTO deleteComment(Integer adId, Integer commentId, UserSecurity userSecurity);
 
     /**
      * Сигнатура метода для изменения комментария, опубликованного на платформе.
      * Этот метод может выбросить исключение {@link CommentNotFoundException}, если комментарий не найден
      *
-     * @param adId       идентификатор объявления
-     * @param commentDTO DTO комментария
-     * @param commentId  идентификатор комментария
+     * @param adId         идентификатор объявления
+     * @param commentDTO   DTO комментария
+     * @param commentId    идентификатор комментария
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO измененного комментария
      */
-    CommentDTO updateComment(Integer adId, CommentDTO commentDTO, Integer commentId);
+    CommentDTO updateComment(Integer adId, CommentDTO commentDTO, Integer commentId, UserSecurity userSecurity);
 }

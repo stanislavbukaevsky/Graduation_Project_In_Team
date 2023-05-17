@@ -7,6 +7,7 @@ public class ExceptionTextMessageConstant {
     public static final String USER_NOT_FOUND_EXCEPTION = "Пользователя с таким именем не существует!";
     public static final String USER_NOT_FOUND_EXCEPTION_2 = "Такого пользователя не существует!";
     public static final String USER_NAME_NOT_FOUND_EXCEPTION = "Пользователя с таким логином не существует!";
+    public static final String USER_NAME_NOT_FOUND_EXCEPTION_2 = "Пользователя с таким логином не существует, либо вы не можете совершить действие!";
     public static final String USER_NAME_ALREADY_EXISTS_EXCEPTION_1 = "Пользователь с логином ";
     public static final String USER_NAME_ALREADY_EXISTS_EXCEPTION_2 = " уже существует! Попробуйте другой логин!";
     public static final String PASSWORD_NOT_FOUND_EXCEPTION = "Вы неверно ввели пароль! Попробуйте ввести пароль заново!";
