@@ -28,6 +28,7 @@ public class LoggerTextMessageConstant {
     public static final String SET_PASSWORD_USER_MESSAGE_LOGGER_SERVICE = "Вызван метод для изменения пароля зарегистрированного пользователя на платформе в сервисе. Имя пользователя: {}. Текущий пароль: {}. Новый пароль: {}";
     public static final String GET_USER_MESSAGE_LOGGER_SERVICE = "Вызван метод для просмотра информации об авторизированном пользователе на платформе в сервисе. Ник пользователя: {}";
     public static final String UPDATE_USER_MESSAGE_LOGGER_SERVICE = "Вызван метод для изменения информации об авторизированном пользователе на платформе в сервисе. Пользователь: {}";
+    public static final String UPDATE_USER_IMAGE_MESSAGE_LOGGER_SERVICE = "Вызван метод изменения аватарки у авторизированного пользователя на платформе в сервисе";
     public static final String GET_COMMENT_BY_ID_COMMENT_MESSAGE_LOGGER_SERVICE = "Вызван метод для получения комментариев по его идентификатору опубликованного на платформе в сервисе. Идентификатор: {}";
     public static final String ADD_COMMENT_MESSAGE_LOGGER_SERVICE = "Вызван метод для добавления комментария к объявлению опубликованного на платформе в сервисе. Комментарий: {}. Идентификатор объявления: {}";
     public static final String UPDATE_COMMENT_MESSAGE_LOGGER_SERVICE = "Вызван метод для изменения комментария опубликованного на платформе в сервисе. Идентификатор объявления: {}. Комментарий: {}. Идентификатор комментария: {}";
@@ -38,7 +39,13 @@ public class LoggerTextMessageConstant {
     public static final String REMOVE_ADS_MESSAGE_LOGGER_SERVICE = "Вызван метод удаления объявления, размещенного на платформе в сервисе. Идентификатор удаляемого объявления: {}";
     public static final String UPDATE_ADS_MESSAGE_LOGGER_SERVICE = "Вызван метод изменения информации об объявлении, размещенного на платформе в сервисе. Идентификатор изменяемого объявления: {}. Объявление: {}";
     public static final String GET_ADS_ME_MESSAGE_LOGGER_SERVICE = "Вызван метод получения объявления авторизированного пользователя, размещенного на платформе в сервисе";
+    public static final String UPDATE_IMAGE_ADS_MESSAGE_LOGGER_SERVICE = "Вызван метод изменения изображения для объявления, размещенного на платформе в сервисе. Идентификатор объявления: {}";
+    public static final String ADD_IMAGE_USER_MESSAGE_LOGGER_SERVICE = "Вызван метод добавления аватарки авторизированному пользователю в сервисе. Логин пользователя: {}";
+    public static final String UPDATE_IMAGE_USER_MESSAGE_LOGGER_SERVICE = "Вызван метод изменения аватарки у авторизированного пользователя в сервисе. Идентификатор пользователя: {}. Логин пользователя: {}";
+    public static final String ADD_IMAGE_ADS_MESSAGE_LOGGER_SERVICE = "Вызван метод добавления изображения к объявлению, размещенном на платформе в сервисе. Идентификатор объявления: {}";
+    public static final String UPDATE_IMAGE_ADS_MESSAGE_LOGGER_IMAGE_SERVICE = "Вызван метод изменения изображения у объявления, размещенного на платформе в сервисе. Идентификатор объявления: {}";
     public static final String ADD_IMAGE_MESSAGE_LOGGER_SERVICE = "Вызван метод добавления изображений в сервисе. Идентификатор объявления: {}";
-    public static final String CHECK_USERS_ADS_MESSAGE_LOGGER_SERVICE = "Вызван метод проверки авторизированного пользователя, размещающего объявление и пользователя по его роли в сервисе. Идентификатор объявления: {}. Авторизированный пользователь: {}";
-    public static final String CHECK_USERS_COMMENT_MESSAGE_LOGGER_SERVICE = "Вызван метод проверки авторизированного пользователя, размещающего комментарий и пользователя по его роли в сервисе. Идентификатор комментария: {}. Авторизированный пользователь: {}";
+    public static final String GET_EXTENSIONS_MESSAGE_LOGGER_SERVICE = "Вызван метод, который генерирует расширение у медиафайла в сервисе. Имя файла: {}";
+    public static final String CHECK_USERS_ADS_MESSAGE_LOGGER_SERVICE = "Вызван метод проверки авторизированного пользователя, размещающего объявление и пользователя по его роли в сервисе. Идентификатор объявления: {}";
+    public static final String CHECK_USERS_COMMENT_MESSAGE_LOGGER_SERVICE = "Вызван метод проверки авторизированного пользователя, размещающего комментарий и пользователя по его роли в сервисе. Идентификатор комментария: {}";
 }

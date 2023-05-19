@@ -32,7 +32,6 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 public class CommentController {
     private final Logger logger = LoggerFactory.getLogger(CommentController.class);
     private final CommentService commentService;
-    private final UserSecurity userSecurity;
 
     /**
      * Метод получения комментариев по id объявления
@@ -75,8 +74,9 @@ public class CommentController {
     /**
      * Метод удаления комментария
      *
-     * @param adId      идентификатор объявления
-     * @param commentId идентификатор комментария
+     * @param adId         идентификатор объявления
+     * @param commentId    идентификатор комментария
+     * @param userSecurity класс, с авторизированными пользователями
      * @return возвращает http статус
      */
     @ApiResponses(value = {
@@ -88,7 +88,8 @@ public class CommentController {
     @Operation(summary = "Удалить комментарий")
     @DeleteMapping(DELETE_MAPPING_DELETE_COMMENT_CONTROLLER)
     public ResponseEntity<CommentDTO> deleteComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
-                                                    @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
+                                                    @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId,
+                                                    UserSecurity userSecurity) {
         logger.info(DELETE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, commentId);
         return ResponseEntity.ok(commentService.deleteComment(adId, commentId, userSecurity));
     }
@@ -99,6 +100,7 @@ public class CommentController {
      * @param adId       идентификатор объявления
      * @param commentDTO новый комментарий
      * @param commentId  идентификатор коммента
+     * @param userSecurity класс, с авторизированными пользователями
      * @return возвращает изменённый комментарий
      */
     @ApiResponses(value = {
@@ -111,7 +113,8 @@ public class CommentController {
     @PatchMapping(PATCH_MAPPING_UPDATE_COMMENT_CONTROLLER)
     public ResponseEntity<CommentDTO> updateComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
                                                     @RequestBody CommentDTO commentDTO,
-                                                    @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
+                                                    @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId,
+                                                    UserSecurity userSecurity) {
         logger.info(UPDATE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, commentDTO, commentId);
         return ResponseEntity.ok(commentService.updateComment(adId, commentDTO, commentId, userSecurity));
     }

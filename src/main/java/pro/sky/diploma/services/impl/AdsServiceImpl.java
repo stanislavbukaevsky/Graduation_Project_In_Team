@@ -3,15 +3,20 @@ package pro.sky.diploma.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import pro.sky.diploma.dto.*;
+import org.springframework.web.server.ResponseStatusException;
+import pro.sky.diploma.dto.AdsDTO;
+import pro.sky.diploma.dto.CreateAdsDTO;
+import pro.sky.diploma.dto.FullAdsDTO;
+import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
 import pro.sky.diploma.entities.Ads;
 import pro.sky.diploma.entities.Image;
 import pro.sky.diploma.exceptions.AdsNotFoundException;
-import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.mappers.AdsMapper;
 import pro.sky.diploma.repositories.AdsRepository;
+import pro.sky.diploma.security.CustomUserDetailsService;
 import pro.sky.diploma.security.UserSecurity;
 import pro.sky.diploma.services.AdsService;
 import pro.sky.diploma.services.ImageService;
@@ -34,6 +39,7 @@ public class AdsServiceImpl implements AdsService {
     private final AdsRepository adsRepository;
     private final AdsMapper adsMapper;
     private final ImageService imageService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     /**
      * Реализация метода для получения и просмотра всех объявлений, опубликованных на платформе
@@ -58,17 +64,17 @@ public class AdsServiceImpl implements AdsService {
     /**
      * Реализация метода для добавления новых объявлений на платформу. <br>ъ
      *
-     * @param createAdsDTO  добавляемое объявление
-     * @param multipartFile изображение
+     * @param createAdsDTO добавляемое объявление
+     * @param imageFile    изображение
      * @return Возвращает новое, добавленное DTO-объявление на платформу
      * @throws IOException общий класс исключений ввода-вывода
      */
     @Override
-    public AdsDTO addAds(CreateAdsDTO createAdsDTO, MultipartFile multipartFile) throws IOException {
-        logger.info(ADD_ADS_MESSAGE_LOGGER_SERVICE, createAdsDTO, multipartFile);
+    public AdsDTO addAds(CreateAdsDTO createAdsDTO, MultipartFile imageFile) throws IOException {
+        logger.info(ADD_ADS_MESSAGE_LOGGER_SERVICE, createAdsDTO, imageFile);
         Ads ads = adsMapper.importEntityToCreateAdsDto(createAdsDTO);
         Ads createAds = adsRepository.save(ads);
-        Image image = imageService.addImage(createAds.getId(), multipartFile);
+        Image image = imageService.addImageAds(createAds.getId(), imageFile);
         createAds.setImage(image);
         AdsDTO adsDTO = adsMapper.importEntityToDTO(createAds);
         return adsDTO;
@@ -155,24 +161,40 @@ public class AdsServiceImpl implements AdsService {
     }
 
     /**
+     * Реализация метода для изменения изображения у объявления, размещенного на платформе
+     *
+     * @param id        идентификатор объявления
+     * @param imageFile изображение
+     * @return Возвращает DTO измененного изображения у объявления, размещенного на платформе
+     * @throws IOException общий класс исключений ввода-вывода
+     */
+    @Override
+    public AdsDTO updateImage(Integer id, MultipartFile imageFile) throws IOException {
+        logger.info(UPDATE_IMAGE_ADS_MESSAGE_LOGGER_SERVICE, id);
+        Long adsId = Long.valueOf(id);
+        Ads ads = adsRepository.findAdsById(adsId).orElseThrow(() ->
+                new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
+
+        if (ads.getImage() == null) {
+            imageService.addImageAds(ads.getId(), imageFile);
+        } else if (ads.getImage() != null) {
+            imageService.updateImageAds(ads.getId(), imageFile);
+        }
+        return adsMapper.importEntityToDTO(ads);
+    }
+
+    /**
      * Приватный метод, который проверяет авторизированного пользователя, размещающего объявление на платформе и пользователя по его роли.
-     * Этот метод может выбросить исключение {@link AdsNotFoundException}, если объявление не найдено.
-     * Также, метод выбрасывает исключение {@link UserNameNotFoundException}, если у пользователя нет доступа для действия
+     * Этот метод может выбросить исключение {@link ResponseStatusException} со статусом 403, если у пользователя нет доступа для действия
      *
      * @param id           идентификатор объявления
      * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает true, если условие выполняется, в противном случае выбрасывает исключение
      */
     private boolean checkUsersByAds(Integer id, UserSecurity userSecurity) {
-        logger.info(CHECK_USERS_ADS_MESSAGE_LOGGER_SERVICE, id, userSecurity);
-        Long adsId = Long.valueOf(id);
-        String ads = adsRepository.findAdsById(adsId).orElseThrow(() ->
-                new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION)).getUser().getEmail();
-        boolean checkAuthUser = ads.equals(userSecurity.getUsername());
-        boolean checkAdmin = userSecurity.getAuthorities().stream().anyMatch(us -> us.getAuthority().contains(Role.ADMIN.name()));
-
-        if (!(checkAuthUser || checkAdmin)) {
-            throw new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION_2);
+        logger.info(CHECK_USERS_ADS_MESSAGE_LOGGER_SERVICE, id);
+        if (!(customUserDetailsService.checkAuthUserToAds(id, userSecurity) || customUserDetailsService.checkAdmin(userSecurity))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, USER_NAME_NOT_FOUND_EXCEPTION_2);
         }
         return true;
     }
