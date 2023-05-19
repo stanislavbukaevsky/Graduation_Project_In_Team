@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.NewPasswordDTO;
 import pro.sky.diploma.dto.UserDTO;
 import pro.sky.diploma.entities.User;
@@ -13,7 +14,11 @@ import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.exceptions.UserNotFoundException;
 import pro.sky.diploma.mappers.UserMapper;
 import pro.sky.diploma.repositories.UserRepository;
+import pro.sky.diploma.security.UserSecurity;
+import pro.sky.diploma.services.ImageService;
 import pro.sky.diploma.services.UserService;
+
+import java.io.IOException;
 
 import static pro.sky.diploma.constants.ExceptionTextMessageConstant.*;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
@@ -29,6 +34,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    //    private final UserSecurity userSecurity;
+    private final ImageService imageService;
 
     /**
      * Реализация метода для изменения пароля зарегистрированного пользователя на платформе.
@@ -93,5 +100,27 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         User result = userRepository.save(user);
         return userMapper.importEntityToDTO(result);
+    }
+
+    /**
+     * Реализация метода для изменения аватарки у авторизированного пользователя на платформе
+     *
+     * @param imageFile    файл изображения
+     * @param userSecurity класс, с авторизированными пользователями
+     * @return Возвращает DTO измененного профиля пользователя
+     * @throws IOException общий класс исключений ввода-вывода
+     */
+    @Override
+    public UserDTO updateUserImage(MultipartFile imageFile, UserSecurity userSecurity) throws IOException {
+        logger.info(UPDATE_USER_IMAGE_MESSAGE_LOGGER_SERVICE);
+        User user = getUser(userSecurity.getUsername());
+        Long id = user.getId();
+
+        if (user.getImage() == null) {
+            imageService.addImageUser(user.getEmail(), imageFile);
+        } else if (user.getImage() != null) {
+            imageService.updateImageUser(id, user.getEmail(), imageFile);
+        }
+        return userMapper.importEntityToDTO(user);
     }
 }

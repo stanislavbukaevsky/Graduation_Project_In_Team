@@ -1,8 +1,12 @@
 package pro.sky.diploma.services;
 
+import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.NewPasswordDTO;
 import pro.sky.diploma.dto.UserDTO;
 import pro.sky.diploma.entities.User;
+import pro.sky.diploma.security.UserSecurity;
+
+import java.io.IOException;
 
 /**
  * Сервис-интерфейс для всех пользователей зарегистрированных на платформе.
@@ -28,10 +32,20 @@ public interface UserService {
     User getUser(String username);
 
     /**
-     * Реализация метода для изменения информации об авторизированном пользователе на платформе.
+     * Сигнатура метода для изменения информации об авторизированном пользователе на платформе.
      *
      * @param userDTO DTO зарегистрированного пользователя
      * @return Возвращает DTO измененного профиля пользователя
      */
     UserDTO updateUser(UserDTO userDTO);
+
+    /**
+     * Сигнатура метода для изменения аватарки у авторизированного пользователя на платформе
+     *
+     * @param imageFile    файл изображения
+     * @param userSecurity класс, с авторизированными пользователями
+     * @return Возвращает DTO измененного профиля пользователя
+     * @throws IOException общий класс исключений ввода-вывода
+     */
+    UserDTO updateUserImage(MultipartFile imageFile, UserSecurity userSecurity) throws IOException;
 }

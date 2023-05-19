@@ -36,7 +36,6 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 public class AdsController {
     private final Logger logger = LoggerFactory.getLogger(AdsController.class);
     private final AdsService adsService;
-    private final UserSecurity userSecurity;
 
     /**
      * Этот метод позволяет получить и просмотреть все объявления, опубликованные на платформе
@@ -95,7 +94,8 @@ public class AdsController {
     /**
      * Этот метод позволяет удалить объявление с платформы по его идентификатору
      *
-     * @param id идентификатор удаляемого объявления
+     * @param id           идентификатор удаляемого объявления
+     * @param userSecurity класс, с авторизированными пользователями
      */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Объявление удалено"),
@@ -104,7 +104,7 @@ public class AdsController {
     })
     @Operation(summary = "Метод для удаления объявления, размещенного на платформе", description = "Позволяет удалить объявление, размещенное на платформе")
     @DeleteMapping(DELETE_MAPPING_REMOVE_ADS_CONTROLLER)
-    public ResponseEntity<AdsDTO> removeAds(@PathVariable(required = true) Integer id) {
+    public ResponseEntity<AdsDTO> removeAds(@PathVariable(required = true) Integer id, UserSecurity userSecurity) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_CONTROLLER, id);
         return ResponseEntity.ok(adsService.removeAds(id, userSecurity));
     }
@@ -112,8 +112,9 @@ public class AdsController {
     /**
      * Этот метод позволяет изменить информацию об объявлении, размещенного на платформе
      *
-     * @param id        идентификатор изменяемого объявления
-     * @param createAds объявление
+     * @param id           идентификатор изменяемого объявления
+     * @param createAds    объявление
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает измененное объявление на платформе
      */
     @ApiResponses(value = {
@@ -124,7 +125,7 @@ public class AdsController {
     })
     @Operation(summary = "Метод для изменения информации об объявления, размещенного на платформе", description = "Позволяет изменить информацию об объявлении, размещенном на платформе")
     @PatchMapping(PATCH_MAPPING_UPDATE_ADS_CONTROLLER)
-    public ResponseEntity<AdsDTO> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAdsDTO createAds) {
+    public ResponseEntity<AdsDTO> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAdsDTO createAds, UserSecurity userSecurity) {
         logger.info(UPDATE_ADS_MESSAGE_LOGGER_CONTROLLER, id, createAds);
         return ResponseEntity.ok(adsService.updateAds(id, createAds, userSecurity));
     }
@@ -158,8 +159,8 @@ public class AdsController {
     })
     @Operation(summary = "Метод для изменения изображения для объявления, размещенного на платформе", description = "Позволяет изменить изображение для объявления, размещенного на платформе")
     @PatchMapping(path = PATCH_MAPPING_UPDATE_IMAGE_CONTROLLER, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateImage(@PathVariable(required = true) Integer id, @RequestPart(name = "image") MultipartFile multipartFile) {
+    public ResponseEntity<AdsDTO> updateImage(@PathVariable(required = true) Integer id, @RequestPart(name = "image") MultipartFile multipartFile) throws IOException {
         logger.info(UPDATE_IMAGE_MESSAGE_LOGGER_CONTROLLER, id, multipartFile);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(adsService.updateImage(id, multipartFile));
     }
 }

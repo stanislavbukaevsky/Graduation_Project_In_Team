@@ -14,4 +14,5 @@ public class ExceptionTextMessageConstant {
     public static final String COMMENT_NOT_FOUND_EXCEPTION = "Комментария с таким идентификатором не существует!";
     public static final String COMMENT_AND_ADS_NOT_FOUND_EXCEPTION = "Комментария с таким идентификатором у этого объявления не существует!";
     public static final String ADS_NOT_FOUND_EXCEPTION = "Объявления с таким идентификатором не существует!";
+    public static final String IMAGE_NOT_FOUND_EXCEPTION = "Изображения с таким идентификатором не существует!";
 }

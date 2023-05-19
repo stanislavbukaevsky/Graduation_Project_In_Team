@@ -3,18 +3,19 @@ package pro.sky.diploma.services.impl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pro.sky.diploma.dto.CommentDTO;
 import pro.sky.diploma.dto.ResponseWrapperCommentDTO;
-import pro.sky.diploma.dto.Role;
 import pro.sky.diploma.entities.Ads;
 import pro.sky.diploma.entities.Comment;
 import pro.sky.diploma.exceptions.AdsNotFoundException;
 import pro.sky.diploma.exceptions.CommentNotFoundException;
-import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.mappers.CommentMapper;
 import pro.sky.diploma.repositories.AdsRepository;
 import pro.sky.diploma.repositories.CommentRepository;
+import pro.sky.diploma.security.CustomUserDetailsService;
 import pro.sky.diploma.security.UserSecurity;
 import pro.sky.diploma.services.CommentService;
 
@@ -35,6 +36,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final AdsRepository adsRepository;
     private final CommentMapper commentMapper;
+    private final CustomUserDetailsService customUserDetailsService;
 
     /**
      * Реализация метода для получения комментариев по id объявления
@@ -123,23 +125,16 @@ public class CommentServiceImpl implements CommentService {
 
     /**
      * Приватный метод, который проверяет авторизированного пользователя, размещающего комментарий на платформе и пользователя по его роли.
-     * Этот метод может выбросить исключение {@link CommentNotFoundException}, если комментарий не найден.
-     * Также, метод выбрасывает исключение {@link UserNameNotFoundException}, если у пользователя нет доступа для действия
+     * Этот метод может выбросить исключение {@link ResponseStatusException} со статусом 403, если у пользователя нет доступа для действия
      *
      * @param id           идентификатор объявления
      * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает true, если условие выполняется, в противном случае выбрасывает исключение
      */
     private boolean checkUsersByComment(Integer id, UserSecurity userSecurity) {
-        logger.info(CHECK_USERS_COMMENT_MESSAGE_LOGGER_SERVICE, id, userSecurity);
-        Long commentId = Long.valueOf(id);
-        String comment = commentRepository.findCommentById(commentId).orElseThrow(() ->
-                new CommentNotFoundException(COMMENT_AND_ADS_NOT_FOUND_EXCEPTION)).getUser().getEmail();
-        boolean checkAuthUser = comment.equals(userSecurity.getUsername());
-        boolean checkAdmin = userSecurity.getAuthorities().stream().anyMatch(us -> us.getAuthority().contains(Role.ADMIN.name()));
-
-        if (!(checkAuthUser || checkAdmin)) {
-            throw new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION_2);
+        logger.info(CHECK_USERS_COMMENT_MESSAGE_LOGGER_SERVICE, id);
+        if (!(customUserDetailsService.checkAuthUserToComment(id, userSecurity) || customUserDetailsService.checkAdmin(userSecurity))) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, USER_NAME_NOT_FOUND_EXCEPTION_2);
         }
         return true;
     }

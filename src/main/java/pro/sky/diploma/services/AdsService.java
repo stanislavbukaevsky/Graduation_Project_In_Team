@@ -64,4 +64,14 @@ public interface AdsService {
      * @return Возвращает DTO объявления авторизированного пользователя, размещенного на платформе
      */
     ResponseWrapperAdsDTO getAdsMe();
+
+    /**
+     * Сигнатура метода для изменения изображения у объявления, размещенного на платформе
+     *
+     * @param id        идентификатор объявления
+     * @param imageFile изображение
+     * @return Возвращает DTO измененного изображения у объявления, размещенного на платформе
+     * @throws IOException общий класс исключений ввода-вывода
+     */
+    AdsDTO updateImage(Integer id, MultipartFile imageFile) throws IOException;
 }
