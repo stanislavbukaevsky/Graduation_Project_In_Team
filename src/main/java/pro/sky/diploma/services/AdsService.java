@@ -74,4 +74,12 @@ public interface AdsService {
      * @throws IOException общий класс исключений ввода-вывода
      */
     AdsDTO updateImage(Integer id, MultipartFile imageFile) throws IOException;
+
+    /**
+     * Сигнатура метода для получения изображения у объявления по его идентификатору
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает массив байт искомого изображения
+     */
+    byte[] getAdsImage(Long id);
 }

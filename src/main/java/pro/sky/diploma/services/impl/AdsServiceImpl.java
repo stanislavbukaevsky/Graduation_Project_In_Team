@@ -14,6 +14,7 @@ import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
 import pro.sky.diploma.entities.Ads;
 import pro.sky.diploma.entities.Image;
 import pro.sky.diploma.exceptions.AdsNotFoundException;
+import pro.sky.diploma.exceptions.ImageNotFoundException;
 import pro.sky.diploma.mappers.AdsMapper;
 import pro.sky.diploma.repositories.AdsRepository;
 import pro.sky.diploma.security.CustomUserDetailsService;
@@ -24,8 +25,7 @@ import pro.sky.diploma.services.ImageService;
 import java.io.IOException;
 import java.util.List;
 
-import static pro.sky.diploma.constants.ExceptionTextMessageConstant.ADS_NOT_FOUND_EXCEPTION;
-import static pro.sky.diploma.constants.ExceptionTextMessageConstant.USER_NAME_NOT_FOUND_EXCEPTION_2;
+import static pro.sky.diploma.constants.ExceptionTextMessageConstant.*;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 
 /**
@@ -181,6 +181,21 @@ public class AdsServiceImpl implements AdsService {
             imageService.updateImageAds(ads.getId(), imageFile);
         }
         return adsMapper.importEntityToDTO(ads);
+    }
+
+    /**
+     * Реализация метода для получения изображения у объявления по его идентификатору
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает массив байт искомого изображения
+     */
+    @Override
+    public byte[] getAdsImage(Long id) {
+        byte[] image = imageService.getAdsImage(id);
+        if (image == null) {
+            throw new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION);
+        }
+        return image;
     }
 
     /**

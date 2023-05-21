@@ -121,4 +121,20 @@ public class UserController {
         logger.info(UPDATE_USER_IMAGE_MESSAGE_LOGGER_CONTROLLER, multipartFile);
         return ResponseEntity.ok(userService.updateUserImage(multipartFile, userSecurity));
     }
+
+    /**
+     * Этот метод позволяет получить аватарку у авторизированного пользователя на платформе
+     *
+     * @param id идентификатор пользователя
+     * @return Возвращает изображение пользователю
+     */
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = byte[].class))),
+            @ApiResponse(responseCode = "404", description = "Не найденна аватарка")
+    })
+    @Operation(summary = "Метод для получения аватарки у авторизированного пользователя на платформе", description = "Позволяет получить аватарку у авторизированного пользователя на платформе")
+    @GetMapping(value = GET_MAPPING_GET_USER_IMAGE_CONTROLLER, produces = {MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> getUserImage(@PathVariable(required = true) Long id) {
+        return ResponseEntity.ok(userService.getUserImage(id));
+    }
 }

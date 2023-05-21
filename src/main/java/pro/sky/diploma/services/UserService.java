@@ -48,4 +48,12 @@ public interface UserService {
      * @throws IOException общий класс исключений ввода-вывода
      */
     UserDTO updateUserImage(MultipartFile imageFile, UserSecurity userSecurity) throws IOException;
+
+    /**
+     * Сигнатура метода для получения аватарки у авторизированного пользователя на платформе по его идентификатору
+     *
+     * @param id идентификатор пользователя
+     * @return Возвращает массив байт искомой аватарки
+     */
+    byte[] getUserImage(Long id);
 }

@@ -154,7 +154,7 @@ public class AdsController {
      * @param multipartFile изображение
      */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = AdsDTO.class))),
             @ApiResponse(responseCode = "404", description = "Не найденное изображение у объявления")
     })
     @Operation(summary = "Метод для изменения изображения для объявления, размещенного на платформе", description = "Позволяет изменить изображение для объявления, размещенного на платформе")
@@ -162,5 +162,21 @@ public class AdsController {
     public ResponseEntity<AdsDTO> updateImage(@PathVariable(required = true) Integer id, @RequestPart(name = "image") MultipartFile multipartFile) throws IOException {
         logger.info(UPDATE_IMAGE_MESSAGE_LOGGER_CONTROLLER, id, multipartFile);
         return ResponseEntity.ok(adsService.updateImage(id, multipartFile));
+    }
+
+    /**
+     * Этот метод позволяет получить изображение у объявления, размещенного на платформе
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает изображение пользователю
+     */
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = byte[].class))),
+            @ApiResponse(responseCode = "404", description = "Не найденное изображение у объявления")
+    })
+    @Operation(summary = "Метод для получения изображения у объявления, размещенного на платформе", description = "Позволяет получить изображение у объявления, размещенного на платформе")
+    @GetMapping(value = GET_MAPPING_GET_ADS_IMAGE_CONTROLLER, produces = {MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> getAdsImage(@PathVariable(required = true) Long id) {
+        return ResponseEntity.ok(adsService.getAdsImage(id));
     }
 }

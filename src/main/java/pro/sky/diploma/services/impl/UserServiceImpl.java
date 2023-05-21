@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.NewPasswordDTO;
 import pro.sky.diploma.dto.UserDTO;
 import pro.sky.diploma.entities.User;
+import pro.sky.diploma.exceptions.ImageNotFoundException;
 import pro.sky.diploma.exceptions.PasswordNotFoundException;
 import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.exceptions.UserNotFoundException;
@@ -122,5 +123,20 @@ public class UserServiceImpl implements UserService {
             imageService.updateImageUser(id, user.getEmail(), imageFile);
         }
         return userMapper.importEntityToDTO(user);
+    }
+
+    /**
+     * Реализация метода для получения аватарки у авторизированного пользователя на платформе по его идентификатору
+     *
+     * @param id идентификатор пользователя
+     * @return Возвращает массив байт искомой аватарки
+     */
+    @Override
+    public byte[] getUserImage(Long id) {
+        byte[] image = imageService.getUserImage(id);
+        if (image == null) {
+            throw new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION);
+        }
+        return image;
     }
 }

@@ -50,4 +50,20 @@ public interface ImageService {
      * @throws IOException общий класс исключений ввода-вывода
      */
     Image updateImageAds(Long id, MultipartFile imageFile) throws IOException;
+
+    /**
+     * Сигнатура метода для получения аватарки пользователя по его идентификатору
+     *
+     * @param id идентификатор пользователя
+     * @return Возвращает массив байт искомой аватарки
+     */
+    byte[] getUserImage(Long id);
+
+    /**
+     * Сигнатура метода для получения изображения у объявления по его идентификатору
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает массив байт искомого изображения
+     */
+    byte[] getAdsImage(Long id);
 }
