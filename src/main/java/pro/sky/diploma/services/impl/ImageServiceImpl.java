@@ -134,6 +134,30 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
+     * Реализация метода для получения аватарки пользователя по его идентификатору
+     *
+     * @param id идентификатор пользователя
+     * @return Возвращает массив байт искомой аватарки
+     */
+    @Override
+    public byte[] getUserImage(Long id) {
+        Image image = imageRepository.findByUserId(id).orElseThrow(() -> new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
+        return image.getData();
+    }
+
+    /**
+     * Реализация метода для получения изображения у объявления по его идентификатору
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает массив байт искомого изображения
+     */
+    @Override
+    public byte[] getAdsImage(Long id) {
+        Image image = imageRepository.findByAdsId(id).orElseThrow(() -> new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
+        return image.getData();
+    }
+
+    /**
      * Приватный метод добавления изображения на платформу
      *
      * @param id        идентификатор объявления
