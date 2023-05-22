@@ -21,6 +21,7 @@ public class AdsDTO {
 
     /**
      * Создаёт {@link AdsDTO} из {@link Ads}
+     *
      * @param ads на входе {@link Ads}
      * @return возвращает {@link AdsDTO}
      */
@@ -37,6 +38,7 @@ public class AdsDTO {
 
     /**
      * Создаёт объявление из DTO объявления
+     *
      * @return {@link Ads}
      */
     public Ads toAds() {

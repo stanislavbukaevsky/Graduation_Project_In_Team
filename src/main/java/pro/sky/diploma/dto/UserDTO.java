@@ -18,6 +18,7 @@ public class UserDTO {
 
     /**
      * Создаёт {@link UserDTO} из {@link User}
+     *
      * @param user Пользователь на входе
      * @return возвращает DTO пользователя
      */
@@ -34,13 +35,14 @@ public class UserDTO {
 
     /**
      * Создаёт объект {@link User} из текущего {@link UserDTO}
+     *
      * @return {@link UserDTO}
      */
-       public User toUser() {
-           User user = new User();
-           user.setId(this.getId());
-           user.setFirstName(this.getFirstName());
-           user.setLastName(this.getLastName());
-           return user;
-       }
+    public User toUser() {
+        User user = new User();
+        user.setId(this.getId());
+        user.setFirstName(this.getFirstName());
+        user.setLastName(this.getLastName());
+        return user;
+    }
 }

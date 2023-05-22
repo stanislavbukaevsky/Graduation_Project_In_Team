@@ -5,7 +5,7 @@ package pro.sky.diploma.constants;
  */
 public class FrontServerUserConstant {
     // Локальный адрес к фронтенду
-    public static final String FRONT_ADDRESS = "http://localhost:3000";
+    public static final String FRONT_ADDRESS = "http://10.0.0.131:3000";
 
     // ADS CONTROLLER
     public static final String REQUEST_MAPPING_ADS_CONTROLLER = "/ads";

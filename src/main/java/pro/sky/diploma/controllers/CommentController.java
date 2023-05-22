@@ -97,9 +97,9 @@ public class CommentController {
     /**
      * Метод для изменения комментария
      *
-     * @param adId       идентификатор объявления
-     * @param commentDTO новый комментарий
-     * @param commentId  идентификатор коммента
+     * @param adId         идентификатор объявления
+     * @param commentDTO   новый комментарий
+     * @param commentId    идентификатор коммента
      * @param userSecurity класс, с авторизированными пользователями
      * @return возвращает изменённый комментарий
      */

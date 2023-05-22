@@ -28,49 +28,49 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.REGISTER_MESSA
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-  private final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
-  private final UserRepository userRepository;
-  private final CustomUserDetailsService customUserDetailsService;
-  private final PasswordEncoder passwordEncoder;
+    private final Logger logger = LoggerFactory.getLogger(AuthServiceImpl.class);
+    private final UserRepository userRepository;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
-  /**
-   * Этот метод реализует авторизацию пользователей на платформе
-   *
-   * @param userName имя пользователя
-   * @param password пароль пользователя
-   */
-  @Override
-  public void login(String userName, String password) {
-    logger.info(LOGIN_MESSAGE_LOGGER_SERVICE, userName, password);
-    UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
-    if (!(passwordEncoder.matches(password, userDetails.getPassword()))) {
-      throw new PasswordNotFoundException(PASSWORD_NOT_FOUND_EXCEPTION);
+    /**
+     * Этот метод реализует авторизацию пользователей на платформе
+     *
+     * @param userName имя пользователя
+     * @param password пароль пользователя
+     */
+    @Override
+    public void login(String userName, String password) {
+        logger.info(LOGIN_MESSAGE_LOGGER_SERVICE, userName, password);
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
+        if (!(passwordEncoder.matches(password, userDetails.getPassword()))) {
+            throw new PasswordNotFoundException(PASSWORD_NOT_FOUND_EXCEPTION);
+        }
     }
-  }
 
-  /**
-   * Этот метод реализует регистрацию новых пользователей на платформе
-   *
-   * @param registerReqDTO класс-DTO для регистрации пользователя на платформе
-   */
-  @Override
-  public void register(RegisterReqDTO registerReqDTO) {
-    logger.info(REGISTER_MESSAGE_LOGGER_SERVICE, registerReqDTO);
-    Boolean ifUser = userRepository.existsUserByEmail(registerReqDTO.getUsername());
-    if (ifUser) {
-        throw new UserNameAlreadyExistsException(USER_NAME_ALREADY_EXISTS_EXCEPTION_1 + registerReqDTO.getUsername() + USER_NAME_ALREADY_EXISTS_EXCEPTION_2);
-    } else {
-        User user = new User();
-        LocalDateTime dateTime = LocalDateTime.now();
-        user.setFirstName(registerReqDTO.getFirstName());
-        user.setLastName(registerReqDTO.getLastName());
-        user.setPhoneNumber(registerReqDTO.getPhone());
-        user.setEmail(registerReqDTO.getUsername());
-        user.setPassword(passwordEncoder.encode(registerReqDTO.getPassword()));
-        user.setRole(Role.USER);
-        user.setActive(true);
-        user.setDateTime(dateTime);
-        userRepository.save(user);
+    /**
+     * Этот метод реализует регистрацию новых пользователей на платформе
+     *
+     * @param registerReqDTO класс-DTO для регистрации пользователя на платформе
+     */
+    @Override
+    public void register(RegisterReqDTO registerReqDTO) {
+        logger.info(REGISTER_MESSAGE_LOGGER_SERVICE, registerReqDTO);
+        Boolean ifUser = userRepository.existsUserByEmail(registerReqDTO.getUsername());
+        if (ifUser) {
+            throw new UserNameAlreadyExistsException(USER_NAME_ALREADY_EXISTS_EXCEPTION_1 + registerReqDTO.getUsername() + USER_NAME_ALREADY_EXISTS_EXCEPTION_2);
+        } else {
+            User user = new User();
+            LocalDateTime dateTime = LocalDateTime.now();
+            user.setFirstName(registerReqDTO.getFirstName());
+            user.setLastName(registerReqDTO.getLastName());
+            user.setPhoneNumber(registerReqDTO.getPhone());
+            user.setEmail(registerReqDTO.getUsername());
+            user.setPassword(passwordEncoder.encode(registerReqDTO.getPassword()));
+            user.setRole(Role.USER);
+            user.setActive(true);
+            user.setDateTime(dateTime);
+            userRepository.save(user);
+        }
     }
-  }
 }
