@@ -40,7 +40,7 @@ public class User {
     @Column(name = "role")
     private Role role;
     @Column(name = "active")
-    private boolean active;
+    private Boolean active;
     @Column(name = "date_time")
     private LocalDateTime dateTime;
     @OneToOne(mappedBy = "user", cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)

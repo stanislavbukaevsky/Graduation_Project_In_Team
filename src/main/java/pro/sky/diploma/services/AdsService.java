@@ -5,6 +5,7 @@ import pro.sky.diploma.dto.AdsDTO;
 import pro.sky.diploma.dto.CreateAdsDTO;
 import pro.sky.diploma.dto.FullAdsDTO;
 import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
+import pro.sky.diploma.security.UserSecurity;
 
 import java.io.IOException;
 
@@ -41,19 +42,21 @@ public interface AdsService {
     /**
      * Сигнатура метода для удаления объявлений с платформы по его идентификатору
      *
-     * @param id идентификатор удаляемого объявления
+     * @param id           идентификатор удаляемого объявления
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO удаленного объявления
      */
-    AdsDTO removeAds(Integer id);
+    AdsDTO removeAds(Integer id, UserSecurity userSecurity);
 
     /**
      * Сигнатура метода для измения информации об объявлении, размещенного на платформе
      *
      * @param id           идентификатор изменяемого объявления
      * @param createAdsDTO объявление
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO измененного объявления на платформе
      */
-    AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO);
+    AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO, UserSecurity userSecurity);
 
     /**
      * Сигнатура метода для получения объявления авторизированного пользователя, размещенного на платформе
@@ -61,4 +64,22 @@ public interface AdsService {
      * @return Возвращает DTO объявления авторизированного пользователя, размещенного на платформе
      */
     ResponseWrapperAdsDTO getAdsMe();
+
+    /**
+     * Сигнатура метода для изменения изображения у объявления, размещенного на платформе
+     *
+     * @param id        идентификатор объявления
+     * @param imageFile изображение
+     * @return Возвращает DTO измененного изображения у объявления, размещенного на платформе
+     * @throws IOException общий класс исключений ввода-вывода
+     */
+    AdsDTO updateImage(Integer id, MultipartFile imageFile) throws IOException;
+
+    /**
+     * Сигнатура метода для получения изображения у объявления по его идентификатору
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает массив байт искомого изображения
+     */
+    byte[] getAdsImage(Long id);
 }

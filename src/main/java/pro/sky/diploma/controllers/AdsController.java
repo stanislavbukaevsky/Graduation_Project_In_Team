@@ -17,6 +17,7 @@ import pro.sky.diploma.dto.AdsDTO;
 import pro.sky.diploma.dto.CreateAdsDTO;
 import pro.sky.diploma.dto.FullAdsDTO;
 import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
+import pro.sky.diploma.security.UserSecurity;
 import pro.sky.diploma.services.AdsService;
 
 import java.io.IOException;
@@ -93,7 +94,8 @@ public class AdsController {
     /**
      * Этот метод позволяет удалить объявление с платформы по его идентификатору
      *
-     * @param id идентификатор удаляемого объявления
+     * @param id           идентификатор удаляемого объявления
+     * @param userSecurity класс, с авторизированными пользователями
      */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Объявление удалено"),
@@ -102,16 +104,17 @@ public class AdsController {
     })
     @Operation(summary = "Метод для удаления объявления, размещенного на платформе", description = "Позволяет удалить объявление, размещенное на платформе")
     @DeleteMapping(DELETE_MAPPING_REMOVE_ADS_CONTROLLER)
-    public ResponseEntity<AdsDTO> removeAds(@PathVariable(required = true) Integer id) {
+    public ResponseEntity<AdsDTO> removeAds(@PathVariable(required = true) Integer id, UserSecurity userSecurity) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_CONTROLLER, id);
-        return ResponseEntity.ok(adsService.removeAds(id));
+        return ResponseEntity.ok(adsService.removeAds(id, userSecurity));
     }
 
     /**
      * Этот метод позволяет изменить информацию об объявлении, размещенного на платформе
      *
-     * @param id        идентификатор изменяемого объявления
-     * @param createAds объявление
+     * @param id           идентификатор изменяемого объявления
+     * @param createAds    объявление
+     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает измененное объявление на платформе
      */
     @ApiResponses(value = {
@@ -122,9 +125,9 @@ public class AdsController {
     })
     @Operation(summary = "Метод для изменения информации об объявления, размещенного на платформе", description = "Позволяет изменить информацию об объявлении, размещенном на платформе")
     @PatchMapping(PATCH_MAPPING_UPDATE_ADS_CONTROLLER)
-    public ResponseEntity<AdsDTO> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAdsDTO createAds) {
+    public ResponseEntity<AdsDTO> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAdsDTO createAds, UserSecurity userSecurity) {
         logger.info(UPDATE_ADS_MESSAGE_LOGGER_CONTROLLER, id, createAds);
-        return ResponseEntity.ok(adsService.updateAds(id, createAds));
+        return ResponseEntity.ok(adsService.updateAds(id, createAds, userSecurity));
     }
 
     /**
@@ -151,13 +154,29 @@ public class AdsController {
      * @param multipartFile изображение
      */
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = String.class))),
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = AdsDTO.class))),
             @ApiResponse(responseCode = "404", description = "Не найденное изображение у объявления")
     })
     @Operation(summary = "Метод для изменения изображения для объявления, размещенного на платформе", description = "Позволяет изменить изображение для объявления, размещенного на платформе")
     @PatchMapping(path = PATCH_MAPPING_UPDATE_IMAGE_CONTROLLER, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> updateImage(@PathVariable(required = true) Integer id, @RequestPart(name = "image") MultipartFile multipartFile) {
+    public ResponseEntity<AdsDTO> updateImage(@PathVariable(required = true) Integer id, @RequestPart(name = "image") MultipartFile multipartFile) throws IOException {
         logger.info(UPDATE_IMAGE_MESSAGE_LOGGER_CONTROLLER, id, multipartFile);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(adsService.updateImage(id, multipartFile));
+    }
+
+    /**
+     * Этот метод позволяет получить изображение у объявления, размещенного на платформе
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает изображение пользователю
+     */
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = byte[].class))),
+            @ApiResponse(responseCode = "404", description = "Не найденное изображение у объявления")
+    })
+    @Operation(summary = "Метод для получения изображения у объявления, размещенного на платформе", description = "Позволяет получить изображение у объявления, размещенного на платформе")
+    @GetMapping(value = GET_MAPPING_GET_ADS_IMAGE_CONTROLLER, produces = {MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<byte[]> getAdsImage(@PathVariable(required = true) Long id) {
+        return ResponseEntity.ok(adsService.getAdsImage(id));
     }
 }

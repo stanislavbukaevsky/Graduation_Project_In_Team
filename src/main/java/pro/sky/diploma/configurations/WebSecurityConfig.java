@@ -3,28 +3,27 @@ package pro.sky.diploma.configurations;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.event.PublicInvocationEvent;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import pro.sky.diploma.security.CustomUserDetailsService;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * Конфигурационный класс для настройки Spring Security.
+ * Здесь находится метод, который разрешает или запрещает определенным пользователям доступ к определенным страницам сайта.
+ * Также, здесь находится метод для шифрования пароля
+ */
 @Configuration
 @RequiredArgsConstructor
 @EnableWebSecurity
 @EnableWebMvc
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class WebSecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources/**",
@@ -32,30 +31,10 @@ public class WebSecurityConfig {
             "/v3/api-docs",
             "/webjars/**",
             "/login",
-            "/register"
+            "/register",
+            "/ads"
     };
     private final CustomUserDetailsService customUserDetailsService;
-
-    //    @Bean
-//    public InMemoryUserDetailsManager userDetailsService() {
-//        UserDetails user =
-//                User.builder()
-//                        .username("user@gmail.com")
-//                        .password("password")
-//                        .passwordEncoder((plainText) -> passwordEncoder().encode(plainText))
-//                        .roles("USER")
-//                        .build();
-//        return new InMemoryUserDetailsManager(user);
-//    }
-
-    /**
-     * Авторизация пользователя из базы
-     * @return
-     */
-    @Bean
-    public JdbcUserDetailsManager userDetailsService() {
-        return new JdbcUserDetailsManager();
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -69,8 +48,9 @@ public class WebSecurityConfig {
                                         .mvcMatchers("/ads/**", "/users/**")
                                         .authenticated()
                 )
-                .cors().disable()
-                //.and()
+                .userDetailsService(customUserDetailsService)
+                .cors()
+                .and()
                 .httpBasic(withDefaults());
         return http.build();
     }
@@ -78,12 +58,5 @@ public class WebSecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
-    }
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(this.customUserDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
     }
 }

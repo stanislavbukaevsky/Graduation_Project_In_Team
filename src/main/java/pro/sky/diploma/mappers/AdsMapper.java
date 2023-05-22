@@ -24,7 +24,7 @@ public interface AdsMapper {
      * @return Возвращает сконвертированную DTO объявлений, опубликованных на платформе
      */
     @Mapping(source = "ads.user.id", target = "author")
-    @Mapping(source = "ads.image.filePath", target = "image")
+    @Mapping(source = "ads.image.data", target = "image")
     @Mapping(source = "id", target = "pk")
     AdsDTO importEntityToDTO(Ads ads);
 
@@ -39,9 +39,19 @@ public interface AdsMapper {
     @Mapping(source = "ads.user.firstName", target = "authorFirstName")
     @Mapping(source = "ads.user.lastName", target = "authorLastName")
     @Mapping(source = "ads.user.email", target = "email")
-    @Mapping(source = "ads.image.filePath", target = "image")
+    @Mapping(source = "ads.image.data", target = "image")
     @Mapping(source = "ads.user.phoneNumber", target = "phone")
     FullAdsDTO importEntityToFullAdsDTO(Ads ads);
+
+    /**
+     * Этот метод конвертирует массив байт в строку
+     *
+     * @param data массив
+     * @return Возвращает массив байт конвертированный в строку
+     */
+    default String importArrayByteToString(byte[] data) {
+        return data.toString();
+    }
 
     /**
      * Этот метод конвертирует сущность объявлений и переменную в DTO с запросом по поиску объявлений. <br>
