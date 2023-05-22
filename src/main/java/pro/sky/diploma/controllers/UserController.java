@@ -19,10 +19,7 @@ import pro.sky.diploma.dto.NewPasswordDTO;
 import pro.sky.diploma.dto.UserDTO;
 import pro.sky.diploma.entities.User;
 import pro.sky.diploma.mappers.UserMapper;
-import pro.sky.diploma.security.UserSecurity;
-import pro.sky.diploma.services.UserService;
-
-import java.io.IOException;
+import pro.sky.diploma.servicies.UserService;
 
 import static pro.sky.diploma.constants.FrontServerUserConstant.*;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
@@ -107,7 +104,6 @@ public class UserController {
      * Этот метод позволяет изменить аватарку у авторизированного пользователя на платформе
      *
      * @param multipartFile аватарка
-     * @param userSecurity  класс, с авторизированными пользователями
      * @return Возвращает пользователя с измененной аватаркой
      */
     @ApiResponses(value = {
@@ -117,8 +113,8 @@ public class UserController {
     @Operation(summary = "Метод для изменения аватарки у авторизированного пользователя на платформе", description = "Позволяет изменить аватарку у авторизированного пользователя на платформе")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @PatchMapping(path = PATCH_MAPPING_UPDATE_USER_IMAGE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> updateUserImage(@RequestPart(name = "image") MultipartFile multipartFile, UserSecurity userSecurity) throws IOException {
+    public ResponseEntity<UserDTO> updateUserImage(@RequestPart(name = "image") MultipartFile multipartFile) {
         logger.info(UPDATE_USER_IMAGE_MESSAGE_LOGGER_CONTROLLER, multipartFile);
-        return ResponseEntity.ok(userService.updateUserImage(multipartFile, userSecurity));
+        return ResponseEntity.ok().build();
     }
 }

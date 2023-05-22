@@ -1,5 +1,4 @@
 package pro.sky.diploma.mappers;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import pro.sky.diploma.dto.CommentDTO;

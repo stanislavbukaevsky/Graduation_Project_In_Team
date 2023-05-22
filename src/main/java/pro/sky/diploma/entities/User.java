@@ -1,5 +1,4 @@
 package pro.sky.diploma.entities;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;

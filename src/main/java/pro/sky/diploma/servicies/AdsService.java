@@ -1,4 +1,4 @@
-package pro.sky.diploma.services;
+package pro.sky.diploma.servicies;
 
 import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.AdsDTO;
@@ -57,6 +57,10 @@ public interface AdsService {
      * @return Возвращает DTO измененного объявления на платформе
      */
     AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO, UserSecurity userSecurity);
+
+    AdsDTO removeAds(Integer id);
+
+    AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO);
 
     /**
      * Сигнатура метода для получения объявления авторизированного пользователя, размещенного на платформе

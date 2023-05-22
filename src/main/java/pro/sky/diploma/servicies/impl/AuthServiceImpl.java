@@ -1,4 +1,4 @@
-package pro.sky.diploma.services.impl;
+package pro.sky.diploma.servicies.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -13,7 +13,7 @@ import pro.sky.diploma.exceptions.PasswordNotFoundException;
 import pro.sky.diploma.exceptions.UserNameAlreadyExistsException;
 import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.security.CustomUserDetailsService;
-import pro.sky.diploma.services.AuthService;
+import pro.sky.diploma.servicies.AuthService;
 
 import java.time.LocalDateTime;
 
@@ -56,21 +56,20 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void register(RegisterReqDTO registerReqDTO) {
         logger.info(REGISTER_MESSAGE_LOGGER_SERVICE, registerReqDTO);
+        User user = new User();
+        LocalDateTime dateTime = LocalDateTime.now();
         Boolean ifUser = userRepository.existsUserByEmail(registerReqDTO.getUsername());
         if (ifUser) {
             throw new UserNameAlreadyExistsException(USER_NAME_ALREADY_EXISTS_EXCEPTION_1 + registerReqDTO.getUsername() + USER_NAME_ALREADY_EXISTS_EXCEPTION_2);
-        } else {
-            User user = new User();
-            LocalDateTime dateTime = LocalDateTime.now();
-            user.setFirstName(registerReqDTO.getFirstName());
-            user.setLastName(registerReqDTO.getLastName());
-            user.setPhoneNumber(registerReqDTO.getPhone());
-            user.setEmail(registerReqDTO.getUsername());
-            user.setPassword(passwordEncoder.encode(registerReqDTO.getPassword()));
-            user.setRole(Role.USER);
-            user.setActive(true);
-            user.setDateTime(dateTime);
-            userRepository.save(user);
         }
+        user.setFirstName(registerReqDTO.getFirstName());
+        user.setLastName(registerReqDTO.getLastName());
+        user.setPhoneNumber(registerReqDTO.getPhone());
+        user.setEmail(registerReqDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(registerReqDTO.getPassword()));
+        user.setRole(Role.USER);
+        user.setActive(true);
+        user.setDateTime(dateTime);
+        userRepository.save(user);
     }
 }

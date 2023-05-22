@@ -1,5 +1,4 @@
 package pro.sky.diploma.repositories;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import pro.sky.diploma.entities.User;

@@ -1,11 +1,10 @@
-package pro.sky.diploma.services.impl;
+package pro.sky.diploma.servicies.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.NewPasswordDTO;
 import pro.sky.diploma.dto.UserDTO;
 import pro.sky.diploma.entities.User;
@@ -14,14 +13,11 @@ import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.exceptions.UserNotFoundException;
 import pro.sky.diploma.mappers.UserMapper;
 import pro.sky.diploma.repositories.UserRepository;
-import pro.sky.diploma.security.UserSecurity;
-import pro.sky.diploma.services.ImageService;
-import pro.sky.diploma.services.UserService;
-
-import java.io.IOException;
+import pro.sky.diploma.servicies.UserService;
 
 import static pro.sky.diploma.constants.ExceptionTextMessageConstant.*;
-import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
+import static pro.sky.diploma.constants.LoggerTextMessageConstant.GET_USER_MESSAGE_LOGGER_SERVICE;
+import static pro.sky.diploma.constants.LoggerTextMessageConstant.UPDATE_USER_MESSAGE_LOGGER_SERVICE;
 
 /**
  * Сервис-класс с бизнес-логикой для всех пользователей зарегистрированных на платформе.
@@ -34,8 +30,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    //    private final UserSecurity;
-    private final ImageService imageService;
 
     /**
      * Реализация метода для изменения пароля зарегистрированного пользователя на платформе.
@@ -45,15 +39,14 @@ public class UserServiceImpl implements UserService {
      * @param email           имя пользователя (логин)
      * @param currentPassword текущий пароль
      * @param newPassword     новый пароль
-     * @return Возвращает конвертированную DTO нового пароля пользователя
+     * @return Возвращает сконвертированную DTO нового пароля пользователя
      */
     @Override
     public NewPasswordDTO setPassword(String email, String currentPassword, String newPassword) {
-        logger.info(SET_PASSWORD_USER_MESSAGE_LOGGER_SERVICE, email, currentPassword, newPassword);
         User user = userRepository.findUserByEmail(email).orElseThrow(() ->
                 new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION));
 
-        if (passwordEncoder.matches(passwordEncoder.encode(currentPassword), passwordEncoder.encode(user.getPassword()))) {
+        if (passwordEncoder.matches(currentPassword, passwordEncoder.encode(currentPassword))) {
             throw new PasswordNotFoundException(PASSWORD_NOT_FOUND_EXCEPTION);
         }
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -62,7 +55,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Реализация метода для просмотра информации об авторизированном пользователе на платформе.
+     * Реализация метода для просмотра информации об авторизированном пользователе на платформе. <br>
      * Этот метод может выбросить исключение {@link UserNotFoundException}, если пользователь не найден
      *
      * @param username имя пользователя (логин)
@@ -79,7 +72,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * Реализация метода для изменения информации об авторизированном пользователе на платформе.
+     * Реализация метода для изменения информации об авторизированном пользователе на платформе. <br>
      * Этот метод может выбросить исключение {@link UserNotFoundException}, если пользователь не найден
      *
      * @param userDTO DTO зарегистрированного пользователя
@@ -100,27 +93,5 @@ public class UserServiceImpl implements UserService {
         user.setEmail(userDTO.getEmail());
         User result = userRepository.save(user);
         return userMapper.importEntityToDTO(result);
-    }
-
-    /**
-     * Реализация метода для изменения аватарки у авторизированного пользователя на платформе
-     *
-     * @param imageFile    файл изображения
-     * @param userSecurity класс, с авторизированными пользователями
-     * @return Возвращает DTO измененного профиля пользователя
-     * @throws IOException общий класс исключений ввода-вывода
-     */
-    @Override
-    public UserDTO updateUserImage(MultipartFile imageFile, UserSecurity userSecurity) throws IOException {
-        logger.info(UPDATE_USER_IMAGE_MESSAGE_LOGGER_SERVICE);
-        User user = getUser(userSecurity.getUsername());
-        Long id = user.getId();
-
-        if (user.getImage() == null) {
-            imageService.addImageUser(user.getEmail(), imageFile);
-        } else if (user.getImage() != null) {
-            imageService.updateImageUser(id, user.getEmail(), imageFile);
-        }
-        return userMapper.importEntityToDTO(user);
     }
 }
