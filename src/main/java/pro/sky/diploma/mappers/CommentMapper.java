@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 import pro.sky.diploma.dto.CommentDTO;
 import pro.sky.diploma.dto.ResponseWrapperCommentDTO;
 import pro.sky.diploma.entities.Comment;
+import pro.sky.diploma.entities.Image;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -24,7 +25,7 @@ public interface CommentMapper {
      * @return Возвращает сконвертированную DTO комментариев, опубликованных на платформе
      */
     @Mapping(source = "comment.user.id", target = "author")
-    @Mapping(source = "comment.user.image.data", target = "authorImage")
+    @Mapping(source = "comment.ads.image", target = "authorImage")
     @Mapping(source = "comment.user.firstName", target = "authorFirstName")
     @Mapping(source = "dateTime", target = "createdAt", dateFormat = "dd/MM/yyyy HH:mm:ss.SS")
     @Mapping(source = "id", target = "pk")
@@ -41,13 +42,13 @@ public interface CommentMapper {
     }
 
     /**
-     * Этот метод конвертирует массив байт в строку
+     * Этот метод указывает путь к изображению
      *
-     * @param data массив
-     * @return Возвращает массив байт конвертированный в строку
+     * @param image сущность изображения
+     * @return Возвращает ссылку на изображение в строковом виде
      */
-    default String importArrayByteToString(byte[] data) {
-        return data.toString();
+    default String importEntityToStringLink(Image image) {
+        return "/ads/images/" + image.getAds().getId();
     }
 
     /**
