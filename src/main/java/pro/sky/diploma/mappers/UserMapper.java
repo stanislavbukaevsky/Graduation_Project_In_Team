@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import pro.sky.diploma.dto.NewPasswordDTO;
 import pro.sky.diploma.dto.UserDTO;
+import pro.sky.diploma.entities.Image;
 import pro.sky.diploma.entities.User;
 
 /**
@@ -21,17 +22,17 @@ public interface UserMapper {
      */
     @Mapping(source = "id", target = "id")
     @Mapping(source = "phoneNumber", target = "phone")
-    @Mapping(source = "user.image.data", target = "image")
+    @Mapping(source = "image", target = "image")
     UserDTO importEntityToDTO(User user);
 
     /**
-     * Этот метод конвертирует массив байт в строку
+     * Этот метод указывает путь к изображению
      *
-     * @param data массив
-     * @return Возвращает массив байт конвертированный в строку
+     * @param image сущность изображения
+     * @return Возвращает ссылку на изображение в строковом виде
      */
-    default String importArrayByteToString(byte[] data) {
-        return data.toString();
+    default String importEntityToStringLink(Image image) {
+        return "/users/images/" + image.getUser().getId();
     }
 
     /**
