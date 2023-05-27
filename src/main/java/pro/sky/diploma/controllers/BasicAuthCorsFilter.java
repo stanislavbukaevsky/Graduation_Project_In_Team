@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
+//@CrossOrigin(value = FRONT_ADDRESS)
 public class BasicAuthCorsFilter extends OncePerRequestFilter {
 
     @Override
