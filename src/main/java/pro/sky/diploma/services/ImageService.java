@@ -23,13 +23,12 @@ public interface ImageService {
     /**
      * Сигнатура метода для изменения аватарки у авторизированного пользователя, зарегистрированного на платформе
      *
-     * @param id        идентификатор пользователя
      * @param username  имя пользователя (логин)
      * @param imageFile файл изображения
      * @return Возвращает измененное изображение у пользователя
      * @throws IOException общий класс исключений ввода-вывода
      */
-    Image updateImageUser(Long id, String username, MultipartFile imageFile) throws IOException;
+    Image updateImageUser(String username, MultipartFile imageFile) throws IOException;
 
     /**
      * Сигнатура метода для добавления изображения к объявлению, размещенного на платформе

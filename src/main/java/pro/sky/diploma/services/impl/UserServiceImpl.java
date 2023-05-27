@@ -35,7 +35,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    //    private final UserSecurity userSecurity;
+    private final UserSecurity userSecurity;
     private final ImageService imageService;
 
     /**
@@ -43,18 +43,17 @@ public class UserServiceImpl implements UserService {
      * Этот метод может выбросить исключение {@link UserNotFoundException}, если пользователь не найден.
      * Также, метод может выбросить исключение {@link PasswordNotFoundException}, если неверно введен пароль пользователя
      *
-     * @param email           имя пользователя (логин)
      * @param currentPassword текущий пароль
      * @param newPassword     новый пароль
      * @return Возвращает сконвертированную DTO нового пароля пользователя
      */
     @Override
-    public NewPasswordDTO setPassword(String email, String currentPassword, String newPassword) {
-        logger.info(SET_PASSWORD_USER_MESSAGE_LOGGER_SERVICE, email, currentPassword, newPassword);
-        User user = userRepository.findUserByEmail(email).orElseThrow(() ->
+    public NewPasswordDTO setPassword(String currentPassword, String newPassword) {
+        logger.info(SET_PASSWORD_USER_MESSAGE_LOGGER_SERVICE, currentPassword, newPassword);
+        User user = userRepository.findUserByEmail(userSecurity.getUsername()).orElseThrow(() ->
                 new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION));
 
-        if (passwordEncoder.matches(passwordEncoder.encode(currentPassword), passwordEncoder.encode(user.getPassword()))) {
+        if (!(passwordEncoder.matches(currentPassword, user.getPassword()))) {
             throw new PasswordNotFoundException(PASSWORD_NOT_FOUND_EXCEPTION);
         }
         user.setPassword(passwordEncoder.encode(newPassword));
@@ -66,17 +65,14 @@ public class UserServiceImpl implements UserService {
      * Реализация метода для просмотра информации об авторизированном пользователе на платформе.
      * Этот метод может выбросить исключение {@link UserNotFoundException}, если пользователь не найден
      *
-     * @param username имя пользователя (логин)
      * @return Возвращает найденного по электронной почте пользователя
      */
     @Override
-    public User getUser(String username) {
-        logger.info(GET_USER_MESSAGE_LOGGER_SERVICE, username);
-        User user = userRepository.findUserByEmail(username).orElse(null);
-        if (user == null) {
-            throw new UserNotFoundException(USER_NOT_FOUND_EXCEPTION);
-        }
-        return user;
+    public UserDTO getUser() {
+        logger.info(GET_USER_MESSAGE_LOGGER_SERVICE);
+        User user = userRepository.findUserByEmail(userSecurity.getUsername()).orElseThrow(() ->
+                new UserNotFoundException(USER_NOT_FOUND_EXCEPTION));
+        return userMapper.importEntityToDTO(user);
     }
 
     /**
@@ -106,21 +102,20 @@ public class UserServiceImpl implements UserService {
     /**
      * Реализация метода для изменения аватарки у авторизированного пользователя на платформе
      *
-     * @param imageFile    файл изображения
-     * @param userSecurity класс, с авторизированными пользователями
+     * @param imageFile файл изображения
      * @return Возвращает DTO измененного профиля пользователя
      * @throws IOException общий класс исключений ввода-вывода
      */
     @Override
-    public UserDTO updateUserImage(MultipartFile imageFile, UserSecurity userSecurity) throws IOException {
+    public UserDTO updateUserImage(MultipartFile imageFile) throws IOException {
         logger.info(UPDATE_USER_IMAGE_MESSAGE_LOGGER_SERVICE);
-        User user = getUser(userSecurity.getUsername());
-        Long id = user.getId();
+        User user = userRepository.findUserByEmail(userSecurity.getUsername()).orElseThrow(() ->
+                new UserNotFoundException(USER_NOT_FOUND_EXCEPTION));
 
         if (user.getImage() == null) {
             imageService.addImageUser(user.getEmail(), imageFile);
         } else if (user.getImage() != null) {
-            imageService.updateImageUser(id, user.getEmail(), imageFile);
+            imageService.updateImageUser(user.getEmail(), imageFile);
         }
         return userMapper.importEntityToDTO(user);
     }
@@ -133,6 +128,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public byte[] getUserImage(Long id) {
+        logger.info(GET_IMAGE_USER_MESSAGE_LOGGER_SERVICE, id);
         byte[] image = imageService.getUserImage(id);
         if (image == null) {
             throw new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION);

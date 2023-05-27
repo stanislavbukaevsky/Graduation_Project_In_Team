@@ -25,24 +25,26 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final AdsRepository adsRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final UserSecurity userSecurity;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByEmail(username).orElseThrow(() ->
                 new UsernameNotFoundException(USER_NOT_FOUND_EXCEPTION));
 
-        return UserSecurity.fromUser(user);
+        userSecurity.setUser(user);
+        return userSecurity;
     }
 
-    public boolean checkAuthUserToAds(Integer id, UserSecurity userSecurity) {
+    public boolean checkAuthUserToAds(Integer id) {
         return findAdsById(id).equals(userSecurity.getUsername());
     }
 
-    public boolean checkAuthUserToComment(Integer id, UserSecurity userSecurity) {
+    public boolean checkAuthUserToComment(Integer id) {
         return findCommentById(id).equals(userSecurity.getUsername());
     }
 
-    public boolean checkAdmin(UserSecurity userSecurity) {
+    public boolean checkAdmin() {
         return userSecurity.getAuthorities().stream().anyMatch(us -> us.getAuthority().contains(Role.ADMIN.name()));
     }
 
