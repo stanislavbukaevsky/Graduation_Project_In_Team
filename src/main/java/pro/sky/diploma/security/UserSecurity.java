@@ -1,13 +1,17 @@
 package pro.sky.diploma.security;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 import pro.sky.diploma.entities.User;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,10 +20,14 @@ import java.util.List;
  * Здесь находятся методы, которые достают данные пользователя из базы данных. <br>
  * Реализует методы интерфейса {@link UserDetails}
  */
-@Data
 @RequiredArgsConstructor
+@Component
+@RequestScope
+@Setter
+@Getter
 public class UserSecurity implements UserDetails {
-    private final User user;
+    private final Logger logger = LoggerFactory.getLogger(UserSecurity.class);
+    private User user;
 
     @Override
     public String getUsername() {
@@ -57,13 +65,4 @@ public class UserSecurity implements UserDetails {
         return user.getActive();
     }
 
-    public static UserDetails fromUser(User user) {
-        List<SimpleGrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(user.getRole().name()));
-
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                authorities
-        );
-    }
 }

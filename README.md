@@ -27,6 +27,35 @@
 
 ***
 
+## **Функционал**
+
+### В приложении использован следующий функционал:
+
+- Spring 2.7.10;
+- Java 11;
+- Maven;
+- Spring Framework;
+- Spring Security;
+- Lombok 1.18.24;
+- PostgresSQL;
+- Swagger-UI 1.6.13;
+- Mapstruct 1.5.5.Final;
+- Liquibase 4.19.0;
+- Docker;
+
+## **Запуск приложения**
+
+### Для запуска приложения необходимо:
+
+- Запустить Docker-образ с [сайта](https://github.com/bizinmitya/front-react-avito/pkgs/container/front-react-avito) для
+  frontend части;
+- Подключить базу данных в файле настроек
+  приложения **[application.properties](src/main/resources/application.properties)**, имя владельца базой данных и
+  пароль;
+- Запустить приложение в файле [DiplomaApplication](src/main/java/pro/sky/diploma/DiplomaApplication.java)
+
+***
+
 ## **Команда**
 
 ### В реализации проекта принимали участие:

@@ -17,7 +17,6 @@ import pro.sky.diploma.dto.AdsDTO;
 import pro.sky.diploma.dto.CreateAdsDTO;
 import pro.sky.diploma.dto.FullAdsDTO;
 import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
-import pro.sky.diploma.security.UserSecurity;
 import pro.sky.diploma.services.AdsService;
 
 import java.io.IOException;
@@ -47,9 +46,9 @@ public class AdsController {
     })
     @Operation(summary = "Метод для получения всех объявлений на платформе", description = "Позволяет просмотреть все объявления, размещенные на платформе")
     @GetMapping
-    public ResponseEntity<ResponseWrapperAdsDTO> getAllAds() {
+    public ResponseEntity<ResponseWrapperAdsDTO> getAllAds(@RequestParam(required = false) String title) {
         logger.info(GET_ALL_ADS_MESSAGE_LOGGER_CONTROLLER);
-        return ResponseEntity.ok(adsService.getAllAds());
+        return ResponseEntity.ok(adsService.getAllAds(title));
     }
 
     /**
@@ -94,8 +93,8 @@ public class AdsController {
     /**
      * Этот метод позволяет удалить объявление с платформы по его идентификатору
      *
-     * @param id           идентификатор удаляемого объявления
-     * @param userSecurity класс, с авторизированными пользователями
+     * @param id идентификатор удаляемого объявления
+     * @return Возвращает удаляемое объявление
      */
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Объявление удалено"),
@@ -104,9 +103,9 @@ public class AdsController {
     })
     @Operation(summary = "Метод для удаления объявления, размещенного на платформе", description = "Позволяет удалить объявление, размещенное на платформе")
     @DeleteMapping(DELETE_MAPPING_REMOVE_ADS_CONTROLLER)
-    public ResponseEntity<AdsDTO> removeAds(@PathVariable(required = true) Integer id, UserSecurity userSecurity) {
+    public ResponseEntity<AdsDTO> removeAds(@PathVariable(required = true) Integer id) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_CONTROLLER, id);
-        return ResponseEntity.ok(adsService.removeAds(id, userSecurity));
+        return ResponseEntity.ok(adsService.removeAds(id));
     }
 
     /**
@@ -114,7 +113,6 @@ public class AdsController {
      *
      * @param id           идентификатор изменяемого объявления
      * @param createAds    объявление
-     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает измененное объявление на платформе
      */
     @ApiResponses(value = {
@@ -125,9 +123,9 @@ public class AdsController {
     })
     @Operation(summary = "Метод для изменения информации об объявления, размещенного на платформе", description = "Позволяет изменить информацию об объявлении, размещенном на платформе")
     @PatchMapping(PATCH_MAPPING_UPDATE_ADS_CONTROLLER)
-    public ResponseEntity<AdsDTO> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAdsDTO createAds, UserSecurity userSecurity) {
+    public ResponseEntity<AdsDTO> updateAds(@PathVariable(required = true) Integer id, @RequestBody CreateAdsDTO createAds) {
         logger.info(UPDATE_ADS_MESSAGE_LOGGER_CONTROLLER, id, createAds);
-        return ResponseEntity.ok(adsService.updateAds(id, createAds, userSecurity));
+        return ResponseEntity.ok(adsService.updateAds(id, createAds));
     }
 
     /**
@@ -176,7 +174,9 @@ public class AdsController {
     })
     @Operation(summary = "Метод для получения изображения у объявления, размещенного на платформе", description = "Позволяет получить изображение у объявления, размещенного на платформе")
     @GetMapping(value = GET_MAPPING_GET_ADS_IMAGE_CONTROLLER, produces = {MediaType.IMAGE_PNG_VALUE})
-    public ResponseEntity<byte[]> getAdsImage(@PathVariable(required = true) Long id) {
-        return ResponseEntity.ok(adsService.getAdsImage(id));
+    public ResponseEntity<byte[]> getAdsImage(@PathVariable(required = true) Integer id) {
+        logger.info(GET_ADS_IMAGE_MESSAGE_LOGGER_CONTROLLER, id);
+        Long adsId = Long.valueOf(id);
+        return ResponseEntity.ok(adsService.getAdsImage(adsId));
     }
 }

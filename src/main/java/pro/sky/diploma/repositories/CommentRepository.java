@@ -1,6 +1,8 @@
 package pro.sky.diploma.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pro.sky.diploma.entities.Comment;
 
@@ -29,5 +31,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * @param commentId идентификатор комментария
      * @return Возвращает найденный комментарий по идентификатору объявления и комментария
      */
-    Optional<Comment> findAdsByIdAndId(Long adId, Long commentId);
+    @Query(value = "SELECT * FROM comments, ads WHERE ads.id = :adsId AND comments.id = :commentId", nativeQuery = true)
+    Optional<Comment> findAdsByIdAndId(@Param("adsId") Long adId, @Param("commentId") Long commentId);
 }
