@@ -13,7 +13,8 @@ import pro.sky.diploma.exceptions.PasswordNotFoundException;
 import pro.sky.diploma.exceptions.UserNameAlreadyExistsException;
 import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.security.CustomUserDetailsService;
-import pro.sky.diploma.servicies.AuthService;
+import pro.sky.diploma.services.AuthService;
+
 
 import java.time.LocalDateTime;
 
