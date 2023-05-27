@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import pro.sky.diploma.dto.LoginReqDTO;
 import pro.sky.diploma.dto.RegisterReqDTO;
-import pro.sky.diploma.servicies.AuthService;
+import pro.sky.diploma.services.AuthService;
 
 import static pro.sky.diploma.constants.FrontServerUserConstant.*;
 import static pro.sky.diploma.constants.LoggerTextMessageConstant.LOGIN_MESSAGE_LOGGER_CONTROLLER;

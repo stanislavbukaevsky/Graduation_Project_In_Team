@@ -17,7 +17,7 @@ import pro.sky.diploma.dto.AdsDTO;
 import pro.sky.diploma.dto.CreateAdsDTO;
 import pro.sky.diploma.dto.FullAdsDTO;
 import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
-import pro.sky.diploma.servicies.AdsService;
+import pro.sky.diploma.services.AdsService;
 
 import java.io.IOException;
 
@@ -68,7 +68,7 @@ public class AdsController {
     })
     @Operation(summary = "Метод для добавления объявлений на платформу", description = "Позволяет добавить объявление на платформу")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AdsDTO> addAds(@RequestPart(name = "properties") CreateAdsDTO createAds, @RequestPart(name = "image") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<Ads> addAds(@RequestPart(name = "properties") CreateAds createAds, @RequestPart(name = "image") MultipartFile multipartFile) {
         logger.info(ADD_ADS_MESSAGE_LOGGER_CONTROLLER, createAds, multipartFile);
         return ResponseEntity.ok(adsService.addAds(createAds, multipartFile));
     }

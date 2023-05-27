@@ -1,4 +1,4 @@
-package pro.sky.diploma.servicies;
+package pro.sky.diploma.services;
 
 import pro.sky.diploma.dto.CommentDTO;
 import pro.sky.diploma.dto.ResponseWrapperCommentDTO;

@@ -1,4 +1,4 @@
-package pro.sky.diploma.servicies.impl;
+package pro.sky.diploma.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,8 +16,8 @@ import pro.sky.diploma.exceptions.UserNotFoundException;
 import pro.sky.diploma.mappers.UserMapper;
 import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.security.UserSecurity;
-import pro.sky.diploma.servicies.ImageService;
-import pro.sky.diploma.servicies.UserService;
+import pro.sky.diploma.services.ImageService;
+import pro.sky.diploma.services.UserService;
 
 import java.io.IOException;
 

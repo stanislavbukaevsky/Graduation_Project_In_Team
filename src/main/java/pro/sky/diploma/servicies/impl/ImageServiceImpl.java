@@ -1,4 +1,4 @@
-package pro.sky.diploma.servicies.impl;
+package pro.sky.diploma.services.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -15,7 +15,7 @@ import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.repositories.AdsRepository;
 import pro.sky.diploma.repositories.ImageRepository;
 import pro.sky.diploma.repositories.UserRepository;
-import pro.sky.diploma.servicies.ImageService;
+import pro.sky.diploma.services.ImageService;
 
 import javax.transaction.Transactional;
 import java.io.*;
@@ -29,7 +29,7 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
 
 /**
  * Сервис-класс с бизнес-логикой для всех изображений, опубликованных на платформе.
-  * Реализует интерфейс {@link ImageService}
+ * Реализует интерфейс {@link ImageService}
  */
 @Service
 @RequiredArgsConstructor

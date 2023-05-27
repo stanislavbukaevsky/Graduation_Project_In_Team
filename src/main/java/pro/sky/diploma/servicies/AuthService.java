@@ -1,4 +1,5 @@
-package pro.sky.diploma.servicies;
+package pro.sky.diploma.services;
+
 import pro.sky.diploma.dto.RegisterReqDTO;
 
 /**

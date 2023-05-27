@@ -1,4 +1,4 @@
-package pro.sky.diploma.servicies;
+package pro.sky.diploma.services;
 
 import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.NewPasswordDTO;

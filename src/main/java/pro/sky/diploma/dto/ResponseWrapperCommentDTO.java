@@ -1,6 +1,5 @@
 package pro.sky.diploma.dto;
 
-
 import lombok.Data;
 
 import java.util.List;
