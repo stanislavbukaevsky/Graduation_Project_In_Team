@@ -1,3 +1,8 @@
 --liquibase formatted sql
 
---changeset sbukaevsky:1
+--changeset :1
+ALTER TABLE images DROP COLUMN data;
+
+--changeset :2
+ALTER TABLE images
+    ADD COLUMN data bytea;

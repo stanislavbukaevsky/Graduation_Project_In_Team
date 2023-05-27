@@ -5,10 +5,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import pro.sky.diploma.dto.Role;
 import pro.sky.diploma.entities.User;
+import pro.sky.diploma.exceptions.AdsNotFoundException;
+import pro.sky.diploma.exceptions.CommentNotFoundException;
+import pro.sky.diploma.repositories.AdsRepository;
+import pro.sky.diploma.repositories.CommentRepository;
 import pro.sky.diploma.repositories.UserRepository;
 
-import static pro.sky.diploma.constants.ExceptionTextMessageConstant.USER_NOT_FOUND_EXCEPTION;
+import static pro.sky.diploma.constants.ExceptionTextMessageConstant.*;
 
 /**
  * Этот класс используется для того, чтобы создать объект {@link UserSecurity} путем реализации единственного метода
@@ -17,13 +22,41 @@ import static pro.sky.diploma.constants.ExceptionTextMessageConstant.USER_NOT_FO
 @Component
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
+    private final AdsRepository adsRepository;
+    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final UserSecurity userSecurity;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByEmail(username).orElseThrow(() ->
                 new UsernameNotFoundException(USER_NOT_FOUND_EXCEPTION));
 
-        return UserSecurity.fromUser(user);
+        userSecurity.setUser(user);
+        return userSecurity;
+    }
+
+    public boolean checkAuthUserToAds(Integer id) {
+        return findAdsById(id).equals(userSecurity.getUsername());
+    }
+
+    public boolean checkAuthUserToComment(Integer id) {
+        return findCommentById(id).equals(userSecurity.getUsername());
+    }
+
+    public boolean checkAdmin() {
+        return userSecurity.getAuthorities().stream().anyMatch(us -> us.getAuthority().contains(Role.ADMIN.name()));
+    }
+
+    private String findAdsById(Integer id) {
+        Long adsId = Long.valueOf(id);
+        return adsRepository.findAdsById(adsId).orElseThrow(() ->
+                new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION)).getUser().getEmail();
+    }
+
+    private String findCommentById(Integer id) {
+        Long commentId = Long.valueOf(id);
+        return commentRepository.findCommentById(commentId).orElseThrow(() ->
+                new CommentNotFoundException(COMMENT_AND_ADS_NOT_FOUND_EXCEPTION)).getUser().getEmail();
     }
 }

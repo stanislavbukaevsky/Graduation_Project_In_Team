@@ -1,15 +1,12 @@
 package pro.sky.diploma.configurations;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import pro.sky.diploma.security.CustomUserDetailsService;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -19,10 +16,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * Также, здесь находится метод для шифрования пароля
  */
 @Configuration
-@RequiredArgsConstructor
 @EnableWebSecurity
-@EnableWebMvc
-@EnableMethodSecurity
 public class WebSecurityConfig {
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources/**",
@@ -31,9 +25,9 @@ public class WebSecurityConfig {
             "/webjars/**",
             "/login",
             "/register",
-            "/ads"
+            "/ads",
+            "/ads/images/**"
     };
-    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -44,10 +38,13 @@ public class WebSecurityConfig {
                                 authorization
                                         .mvcMatchers(AUTH_WHITELIST)
                                         .permitAll()
+                                        .mvcMatchers(HttpMethod.GET, "/ads")
+                                        .permitAll()
+                                        .mvcMatchers(HttpMethod.GET, "/ads/images/**")
+                                        .permitAll()
                                         .mvcMatchers("/ads/**", "/users/**")
                                         .authenticated()
                 )
-                .userDetailsService(customUserDetailsService)
                 .cors()
                 .and()
                 .httpBasic(withDefaults());

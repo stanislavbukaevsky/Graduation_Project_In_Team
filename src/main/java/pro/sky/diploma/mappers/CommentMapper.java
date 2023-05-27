@@ -23,11 +23,22 @@ public interface CommentMapper {
      * @return Возвращает сконвертированную DTO комментариев, опубликованных на платформе
      */
     @Mapping(source = "comment.user.id", target = "author")
-    @Mapping(source = "comment.user.image.data", target = "authorImage")
+    @Mapping(source = "comment", target = "authorImage")
     @Mapping(source = "comment.user.firstName", target = "authorFirstName")
     @Mapping(source = "dateTime", target = "createdAt", dateFormat = "dd/MM/yyyy HH:mm:ss.SS")
     @Mapping(source = "id", target = "pk")
     CommentDTO importEntityToDTO(Comment comment);
+
+    /**
+     * Этот метод конвертирует сущность комментарий и переменную в DTO с запросом по поиску комментариев. <br>
+     * Используется аннотация {@link Mapping} для соответствия полей
+     *
+     * @param count    общее количество комментариев
+     * @param comments список комментариев с параметром сущности комментария
+     * @return Возвращает сконвертированную DTO с запросом по поиску комментариев, опубликованном на платформе
+     */
+    @Mapping(source = "comments", target = "results")
+    ResponseWrapperCommentDTO importVariablesToDTO(Integer count, List<Comment> comments);
 
     /**
      * Этот метод конвертирует дату и время в объект типа Long
@@ -40,23 +51,12 @@ public interface CommentMapper {
     }
 
     /**
-     * Этот метод конвертирует массив байт в строку
+     * Этот метод указывает путь к изображению
      *
-     * @param data массив
-     * @return Возвращает массив байт конвертированный в строку
+     * @param comment сущность комментария
+     * @return Возвращает ссылку на изображение в строковом виде
      */
-    default String importArrayByteToString(byte[] data) {
-        return data.toString();
+    default String importEntityToStringLink(Comment comment) {
+        return "/users/avatars/" + comment.getAds().getUser().getId();
     }
-
-    /**
-     * Этот метод конвертирует сущность комментарий и переменную в DTO с запросом по поиску комментариев. <br>
-     * Используется аннотация {@link Mapping} для соответствия полей
-     *
-     * @param count    общее количество комментариев
-     * @param comments список комментариев с параметром сущности комментария
-     * @return Возвращает сконвертированную DTO с запросом по поиску комментариев, опубликованном на платформе
-     */
-    @Mapping(source = "comments", target = "results")
-    ResponseWrapperCommentDTO importVariablesToDTO(Integer count, List<Comment> comments);
 }
