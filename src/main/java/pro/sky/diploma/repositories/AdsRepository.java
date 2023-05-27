@@ -2,7 +2,6 @@ package pro.sky.diploma.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import pro.sky.diploma.entities.Ads;
 
@@ -41,8 +40,8 @@ public interface AdsRepository extends JpaRepository<Ads, Long> {
      * @param title название объявления
      * @return Возвращает список найденных по названию объявлений
      */
-    @Query(value = "SELECT * FROM ads WHERE ads.title LIKE %:title%", nativeQuery = true)
-    List<Ads> searchAdsByTitleLikeIgnoreCase(@Param("title") String title);
+    @Query(value = "SELECT * FROM ads WHERE lower(title) LIKE lower(concat('%', ?1,'%'))", nativeQuery = true)
+    List<Ads> findAllByAds(String title);
 
     /**
      * Этот метод ищет все объявления, размещенные одним пользователем по его электронной почте

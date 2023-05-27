@@ -33,5 +33,5 @@ public class FrontServerUserConstant {
     public static final String GET_MAPPING_GET_USER_CONTROLLER = "/me";
     public static final String PATCH_MAPPING_UPDATE_USER_CONTROLLER = "/me";
     public static final String PATCH_MAPPING_UPDATE_USER_IMAGE = "/me/image";
-    public static final String GET_MAPPING_GET_USER_IMAGE_CONTROLLER = "/images/{id}";
+    public static final String GET_MAPPING_GET_USER_IMAGE_CONTROLLER = "/avatars/{id}";
 }

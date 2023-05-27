@@ -1,9 +1,6 @@
 package pro.sky.diploma.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import pro.sky.diploma.dto.Role;
@@ -18,6 +15,7 @@ import java.util.List;
 @Entity
 @Data
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
