@@ -39,8 +39,10 @@ public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
     private final AdsRepository adsRepository;
     private final UserRepository userRepository;
-    @Value("${path.to.avatars.folder}")
+    @Value("${path.to.images.folder}")
     private String imageDir;
+    @Value("${path.to.avatars.folder}")
+    private String avatarDir;
 
     /**
      * Реализация метода для добавления аватарки у авторизированного пользователя, зарегистрированного на платформе
@@ -53,39 +55,32 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Image addImageUser(String username, MultipartFile imageFile) throws IOException {
         logger.info(ADD_IMAGE_USER_MESSAGE_LOGGER_SERVICE, username);
-        LocalDateTime dateTime = LocalDateTime.now();
         User user = userRepository.findUserByEmail(username).orElseThrow(() ->
                 new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION));
         Image image = new Image();
-        addImage(user.getId(), imageFile);
-        image.setDateTime(dateTime);
+        saveAvatarUser(user.getId(), imageFile, image);
         image.setUser(user);
-        Image addImage = imageRepository.save(image);
-        return addImage.getUser().getImage();
+        return imageRepository.save(image);
     }
 
     /**
      * Реализация метода для изменения аватарки у авторизированного пользователя, зарегистрированного на платформе
      *
-     * @param id        идентификатор пользователя
      * @param username  имя пользователя (логин)
      * @param imageFile файл изображения
      * @return Возвращает измененное изображение у пользователя
      * @throws IOException общий класс исключений ввода-вывода
      */
     @Override
-    public Image updateImageUser(Long id, String username, MultipartFile imageFile) throws IOException {
-        logger.info(UPDATE_IMAGE_USER_MESSAGE_LOGGER_SERVICE, id, username);
-        LocalDateTime dateTime = LocalDateTime.now();
+    public Image updateImageUser(String username, MultipartFile imageFile) throws IOException {
+        logger.info(UPDATE_IMAGE_USER_MESSAGE_LOGGER_SERVICE, username);
         User user = userRepository.findUserByEmail(username).orElseThrow(() ->
                 new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION));
         Image image = imageRepository.findByUserId(user.getId()).orElseThrow(() ->
                 new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
-        addImage(user.getId(), imageFile);
-        image.setDateTime(dateTime);
+        saveAvatarUser(user.getId(), imageFile, image);
         image.setUser(user);
-        Image updateImage = imageRepository.save(image);
-        return updateImage.getUser().getImage();
+        return imageRepository.save(image);
     }
 
     /**
@@ -99,15 +94,12 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Image addImageAds(Long id, MultipartFile imageFile) throws IOException {
         logger.info(ADD_IMAGE_ADS_MESSAGE_LOGGER_SERVICE, id);
-        LocalDateTime dateTime = LocalDateTime.now();
         Ads ads = adsRepository.findAdsById(id).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
         Image image = new Image();
-        addImage(ads.getId(), imageFile);
-        image.setDateTime(dateTime);
+        saveImageAds(ads.getId(), imageFile, image);
         image.setAds(ads);
-        Image addImage = imageRepository.save(image);
-        return addImage.getAds().getImage();
+        return imageRepository.save(image);
     }
 
     /**
@@ -121,16 +113,13 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Image updateImageAds(Long id, MultipartFile imageFile) throws IOException {
         logger.info(UPDATE_IMAGE_ADS_MESSAGE_LOGGER_IMAGE_SERVICE, id);
-        LocalDateTime dateTime = LocalDateTime.now();
         Ads ads = adsRepository.findAdsById(id).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
         Image image = imageRepository.findByAdsId(ads.getId()).orElseThrow(() ->
                 new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
-        addImage(ads.getId(), imageFile);
-        image.setDateTime(dateTime);
+        saveImageAds(ads.getId(), imageFile, image);
         image.setAds(ads);
-        Image updateImage = imageRepository.save(image);
-        return updateImage.getAds().getImage();
+        return imageRepository.save(image);
     }
 
     /**
@@ -141,7 +130,8 @@ public class ImageServiceImpl implements ImageService {
      */
     @Override
     public byte[] getUserImage(Long id) {
-        Image image = imageRepository.findByUserId(id).orElseThrow(() -> new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
+        Image image = imageRepository.findByUserId(id).orElseThrow(() ->
+                new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
         return image.getData();
     }
 
@@ -153,20 +143,21 @@ public class ImageServiceImpl implements ImageService {
      */
     @Override
     public byte[] getAdsImage(Long id) {
-        Image image = imageRepository.findByAdsId(id).orElseThrow(() -> new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
+        Image image = imageRepository.findByAdsId(id).orElseThrow(() ->
+                new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
         return image.getData();
     }
 
     /**
-     * Приватный метод добавления изображения на платформу
+     * Приватный метод добавления изображения к объявлению на платформу
      *
      * @param id        идентификатор объявления
      * @param imageFile файл изображения
-     * @return Возвращает добавленное изображение
      * @throws IOException общий класс исключений ввода-вывода
      */
-    private Image addImage(Long id, MultipartFile imageFile) throws IOException {
-        logger.info(ADD_IMAGE_MESSAGE_LOGGER_SERVICE, id);
+    private void saveImageAds(Long id, MultipartFile imageFile, Image image) throws IOException {
+        logger.info(ADD_IMAGE_SAVE_ADS_MESSAGE_LOGGER_SERVICE, id);
+        LocalDateTime dateTime = LocalDateTime.now();
         Path path = Path.of(imageDir, id + "." + getExtensions(imageFile.getOriginalFilename()));
         Files.createDirectories(path.getParent());
         Files.deleteIfExists(path);
@@ -179,13 +170,42 @@ public class ImageServiceImpl implements ImageService {
             bis.transferTo(bos);
         }
 
-        Image image = new Image();
         image.setFilePath(path.toString());
         image.setFileSize(imageFile.getSize());
         image.setMediaType(imageFile.getContentType());
         image.setData(imageFile.getBytes());
+        image.setDateTime(dateTime);
 
-        return imageRepository.save(image);
+    }
+
+    /**
+     * Приватный метод добавления аватарки пользователю, зарегистрированного на платформе
+     *
+     * @param id        идентификатор пользователя
+     * @param imageFile файл изображения
+     * @throws IOException общий класс исключений ввода-вывода
+     */
+    private void saveAvatarUser(Long id, MultipartFile imageFile, Image image) throws IOException {
+        logger.info(ADD_IMAGE_SAVE_USER_MESSAGE_LOGGER_SERVICE, id);
+        LocalDateTime dateTime = LocalDateTime.now();
+        Path path = Path.of(avatarDir, id + "." + getExtensions(imageFile.getOriginalFilename()));
+        Files.createDirectories(path.getParent());
+        Files.deleteIfExists(path);
+
+        try (InputStream is = imageFile.getInputStream();
+             OutputStream os = Files.newOutputStream(path, CREATE_NEW);
+             BufferedInputStream bis = new BufferedInputStream(is, 1024);
+             BufferedOutputStream bos = new BufferedOutputStream(os, 1024)
+        ) {
+            bis.transferTo(bos);
+        }
+
+        image.setFilePath(path.toString());
+        image.setFileSize(imageFile.getSize());
+        image.setMediaType(imageFile.getContentType());
+        image.setData(imageFile.getBytes());
+        image.setDateTime(dateTime);
+
     }
 
     /**

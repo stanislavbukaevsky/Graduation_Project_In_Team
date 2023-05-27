@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import pro.sky.diploma.dto.AdsDTO;
@@ -13,16 +14,20 @@ import pro.sky.diploma.dto.FullAdsDTO;
 import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
 import pro.sky.diploma.entities.Ads;
 import pro.sky.diploma.entities.Image;
+import pro.sky.diploma.entities.User;
 import pro.sky.diploma.exceptions.AdsNotFoundException;
 import pro.sky.diploma.exceptions.ImageNotFoundException;
+import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.mappers.AdsMapper;
 import pro.sky.diploma.repositories.AdsRepository;
+import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.security.CustomUserDetailsService;
 import pro.sky.diploma.security.UserSecurity;
 import pro.sky.diploma.services.AdsService;
 import pro.sky.diploma.services.ImageService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static pro.sky.diploma.constants.ExceptionTextMessageConstant.*;
@@ -34,12 +39,15 @@ import static pro.sky.diploma.constants.LoggerTextMessageConstant.*;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AdsServiceImpl implements AdsService {
     private final Logger logger = LoggerFactory.getLogger(AdsServiceImpl.class);
     private final AdsRepository adsRepository;
+    private final UserRepository userRepository;
     private final AdsMapper adsMapper;
     private final ImageService imageService;
     private final CustomUserDetailsService customUserDetailsService;
+    private final UserSecurity userSecurity;
 
     /**
      * Реализация метода для получения и просмотра всех объявлений, опубликованных на платформе
@@ -47,17 +55,13 @@ public class AdsServiceImpl implements AdsService {
      * @return Возвращает DTO всех опубликованных объявлений на платформе
      */
     @Override
-    public ResponseWrapperAdsDTO getAllAds() {
+    public ResponseWrapperAdsDTO getAllAds(String title) {
         logger.info(GET_ALL_ADS_MESSAGE_LOGGER_SERVICE);
-        List<Ads> listAds = adsRepository.findAll();
-        ResponseWrapperAdsDTO responseWrapperAdsDTO = adsMapper.importVariablesToDTO(listAds.size(), listAds);
-
-        for (Ads ads : listAds) {
-            List<Ads> adsByTitle = adsRepository.searchAdsByTitleLikeIgnoreCase(ads.getTitle());
-            List<AdsDTO> adsListDTO = adsMapper.importEntityListAdsToListAdsDTO(adsByTitle);
-            responseWrapperAdsDTO.setCount(adsListDTO.size());
-            responseWrapperAdsDTO.setResults(adsListDTO);
-        }
+        List<Ads> listAds = adsRepository.findAllByAds(title);
+        List<AdsDTO> listAdsDTO = adsMapper.importEntityListAdsToListAdsDTO(listAds);
+        ResponseWrapperAdsDTO responseWrapperAdsDTO = new ResponseWrapperAdsDTO();
+        responseWrapperAdsDTO.setCount(listAdsDTO.size());
+        responseWrapperAdsDTO.setResults(listAdsDTO);
         return responseWrapperAdsDTO;
     }
 
@@ -72,12 +76,16 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public AdsDTO addAds(CreateAdsDTO createAdsDTO, MultipartFile imageFile) throws IOException {
         logger.info(ADD_ADS_MESSAGE_LOGGER_SERVICE, createAdsDTO, imageFile);
+        LocalDateTime dateTime = LocalDateTime.now();
+        User user = userRepository.findUserByEmail(userSecurity.getUsername()).orElseThrow(() ->
+                new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION));
         Ads ads = adsMapper.importEntityToCreateAdsDto(createAdsDTO);
-        Ads createAds = adsRepository.save(ads);
-        Image image = imageService.addImageAds(createAds.getId(), imageFile);
-        createAds.setImage(image);
-        AdsDTO adsDTO = adsMapper.importEntityToDTO(createAds);
-        return adsDTO;
+        ads.setDateTime(dateTime);
+        ads.setUser(user);
+        Ads savedAds = adsRepository.save(ads);
+        Image adsImage = imageService.addImageAds(savedAds.getId(), imageFile);
+        savedAds.setImage(adsImage);
+        return adsMapper.importEntityToDTO(savedAds);
     }
 
     /**
@@ -92,28 +100,26 @@ public class AdsServiceImpl implements AdsService {
         Long idAds = Long.valueOf(id);
         Ads ads = adsRepository.findById(idAds).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
-        FullAdsDTO fullAdsDTO = adsMapper.importEntityToFullAdsDTO(ads);
-        return fullAdsDTO;
+        return adsMapper.importEntityToFullAdsDTO(ads);
     }
 
     /**
      * Реализация метода для удаления объявлений с платформы по его идентификатору
      *
-     * @param id           идентификатор удаляемого объявления
-     * @param userSecurity класс, с авторизированными пользователями
+     * @param id идентификатор удаляемого объявления
+     *           //     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO удаленного объявления
      */
     @Override
-    public AdsDTO removeAds(Integer id, UserSecurity userSecurity) {
+    public AdsDTO removeAds(Integer id) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_SERVICE, id);
         Long idAds = Long.valueOf(id);
         Ads ads = adsRepository.findAdsById(idAds).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
-        if (ads != null && checkUsersByAds(id, userSecurity)) {
+        if (ads != null && checkUsersByAds(id)) {
             adsRepository.delete(ads);
         }
-        AdsDTO adsDTO = adsMapper.importEntityToDTO(ads);
-        return adsDTO;
+        return adsMapper.importEntityToDTO(ads);
     }
 
     /**
@@ -121,18 +127,16 @@ public class AdsServiceImpl implements AdsService {
      *
      * @param id           идентификатор изменяемого объявления
      * @param createAdsDTO объявление
-     * @param userSecurity класс, с авторизированными пользователями
+     *                     //     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO измененного объявления на платформе
      */
     @Override
-    public AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO, UserSecurity userSecurity) {
+    public AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO) {
         logger.info(UPDATE_ADS_MESSAGE_LOGGER_SERVICE, id, createAdsDTO);
         Long idAds = Long.valueOf(id);
-        Ads ads = adsRepository.findAdsById(idAds).orElse(null);
-        if (ads == null) {
-            throw new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION);
-        }
-        checkUsersByAds(id, userSecurity);
+        Ads ads = adsRepository.findAdsById(idAds).orElseThrow(() ->
+                new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
+        checkUsersByAds(id);
         ads.setDescription(createAdsDTO.getDescription());
         ads.setPrice(createAdsDTO.getPrice());
         ads.setTitle(createAdsDTO.getTitle());
@@ -148,15 +152,11 @@ public class AdsServiceImpl implements AdsService {
     @Override
     public ResponseWrapperAdsDTO getAdsMe() {
         logger.info(GET_ADS_ME_MESSAGE_LOGGER_SERVICE);
-        List<Ads> listAds = adsRepository.findAll();
-        ResponseWrapperAdsDTO responseWrapperAdsDTO = adsMapper.importVariablesToDTO(listAds.size(), listAds);
-
-        for (Ads ads : listAds) {
-            List<Ads> adsByEmail = adsRepository.findAdsByUserEmail(ads.getUser().getEmail());
-            List<AdsDTO> adsDTO = adsMapper.importEntityListAdsToListAdsDTO(adsByEmail);
-            responseWrapperAdsDTO.setCount(adsDTO.size());
-            responseWrapperAdsDTO.setResults(adsDTO);
-        }
+        List<Ads> listAdsByUser = adsRepository.findAdsByUserEmail(userSecurity.getUsername());
+        List<AdsDTO> listAdsByUserDTO = adsMapper.importEntityListAdsToListAdsDTO(listAdsByUser);
+        ResponseWrapperAdsDTO responseWrapperAdsDTO = new ResponseWrapperAdsDTO();
+        responseWrapperAdsDTO.setCount(listAdsByUserDTO.size());
+        responseWrapperAdsDTO.setResults(listAdsByUserDTO);
         return responseWrapperAdsDTO;
     }
 
@@ -191,6 +191,7 @@ public class AdsServiceImpl implements AdsService {
      */
     @Override
     public byte[] getAdsImage(Long id) {
+        logger.info(GET_IMAGE_ADS_MESSAGE_LOGGER_SERVICE, id);
         byte[] image = imageService.getAdsImage(id);
         if (image == null) {
             throw new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION);
@@ -202,13 +203,13 @@ public class AdsServiceImpl implements AdsService {
      * Приватный метод, который проверяет авторизированного пользователя, размещающего объявление на платформе и пользователя по его роли.
      * Этот метод может выбросить исключение {@link ResponseStatusException} со статусом 403, если у пользователя нет доступа для действия
      *
-     * @param id           идентификатор объявления
-     * @param userSecurity класс, с авторизированными пользователями
+     * @param id идентификатор объявления
+     *           //     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает true, если условие выполняется, в противном случае выбрасывает исключение
      */
-    private boolean checkUsersByAds(Integer id, UserSecurity userSecurity) {
+    private boolean checkUsersByAds(Integer id) {
         logger.info(CHECK_USERS_ADS_MESSAGE_LOGGER_SERVICE, id);
-        if (!(customUserDetailsService.checkAuthUserToAds(id, userSecurity) || customUserDetailsService.checkAdmin(userSecurity))) {
+        if (!(customUserDetailsService.checkAuthUserToAds(id) || customUserDetailsService.checkAdmin())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, USER_NAME_NOT_FOUND_EXCEPTION_2);
         }
         return true;

@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pro.sky.diploma.dto.CommentDTO;
 import pro.sky.diploma.dto.ResponseWrapperCommentDTO;
-import pro.sky.diploma.security.UserSecurity;
 import pro.sky.diploma.services.CommentService;
 
 import static pro.sky.diploma.constants.FrontServerUserConstant.*;
@@ -65,8 +64,7 @@ public class CommentController {
     })
     @Operation(summary = "Добавить комментарий к объявлению")
     @PostMapping(POST_MAPPING_ADD_COMMENT_CONTROLLER)
-    public ResponseEntity<CommentDTO> addComment(@RequestBody CommentDTO commentDTO,
-                                                 @Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
+    public ResponseEntity<CommentDTO> addComment(@RequestBody CommentDTO commentDTO, @Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer id) {
         logger.info(ADD_COMMENT_MESSAGE_LOGGER_CONTROLLER, commentDTO, id);
         return ResponseEntity.ok(commentService.addComment(commentDTO, id));
     }
@@ -76,7 +74,6 @@ public class CommentController {
      *
      * @param adId         идентификатор объявления
      * @param commentId    идентификатор комментария
-     * @param userSecurity класс, с авторизированными пользователями
      * @return возвращает http статус
      */
     @ApiResponses(value = {
@@ -87,20 +84,18 @@ public class CommentController {
     })
     @Operation(summary = "Удалить комментарий")
     @DeleteMapping(DELETE_MAPPING_DELETE_COMMENT_CONTROLLER)
-    public ResponseEntity<CommentDTO> deleteComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
-                                                    @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId,
-                                                    UserSecurity userSecurity) {
+    public ResponseEntity<Void> deleteComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId, @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
         logger.info(DELETE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, commentId);
-        return ResponseEntity.ok(commentService.deleteComment(adId, commentId, userSecurity));
+        commentService.deleteComment(adId, commentId);
+        return ResponseEntity.ok().build();
     }
 
     /**
      * Метод для изменения комментария
      *
-     * @param adId         идентификатор объявления
-     * @param commentDTO   новый комментарий
-     * @param commentId    идентификатор коммента
-     * @param userSecurity класс, с авторизированными пользователями
+     * @param adId       идентификатор объявления
+     * @param commentDTO новый комментарий
+     * @param commentId  идентификатор коммента
      * @return возвращает изменённый комментарий
      */
     @ApiResponses(value = {
@@ -113,9 +108,8 @@ public class CommentController {
     @PatchMapping(PATCH_MAPPING_UPDATE_COMMENT_CONTROLLER)
     public ResponseEntity<CommentDTO> updateComment(@Parameter(description = "Идентификатор объявления") @PathVariable(required = true) Integer adId,
                                                     @RequestBody CommentDTO commentDTO,
-                                                    @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId,
-                                                    UserSecurity userSecurity) {
+                                                    @Parameter(description = "Идентификатор коммента") @PathVariable(required = true) Integer commentId) {
         logger.info(UPDATE_COMMENT_MESSAGE_LOGGER_CONTROLLER, adId, commentDTO, commentId);
-        return ResponseEntity.ok(commentService.updateComment(adId, commentDTO, commentId, userSecurity));
+        return ResponseEntity.ok(commentService.updateComment(adId, commentDTO, commentId));
     }
 }

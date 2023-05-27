@@ -5,7 +5,6 @@ import pro.sky.diploma.dto.AdsDTO;
 import pro.sky.diploma.dto.CreateAdsDTO;
 import pro.sky.diploma.dto.FullAdsDTO;
 import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
-import pro.sky.diploma.security.UserSecurity;
 
 import java.io.IOException;
 
@@ -19,7 +18,7 @@ public interface AdsService {
      *
      * @return Возвращает DTO всех опубликованных объявлений на платформе
      */
-    ResponseWrapperAdsDTO getAllAds();
+    ResponseWrapperAdsDTO getAllAds(String title);
 
     /**
      * Сигнатура метода для добавления новых объявлений на платформу. <br>ъ
@@ -42,21 +41,19 @@ public interface AdsService {
     /**
      * Сигнатура метода для удаления объявлений с платформы по его идентификатору
      *
-     * @param id           идентификатор удаляемого объявления
-     * @param userSecurity класс, с авторизированными пользователями
+     * @param id идентификатор удаляемого объявления
      * @return Возвращает DTO удаленного объявления
      */
-    AdsDTO removeAds(Integer id, UserSecurity userSecurity);
+    AdsDTO removeAds(Integer id);
 
     /**
      * Сигнатура метода для измения информации об объявлении, размещенного на платформе
      *
      * @param id           идентификатор изменяемого объявления
      * @param createAdsDTO объявление
-     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO измененного объявления на платформе
      */
-    AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO, UserSecurity userSecurity);
+    AdsDTO updateAds(Integer id, CreateAdsDTO createAdsDTO);
 
     /**
      * Сигнатура метода для получения объявления авторизированного пользователя, размещенного на платформе
@@ -82,4 +79,5 @@ public interface AdsService {
      * @return Возвращает массив байт искомого изображения
      */
     byte[] getAdsImage(Long id);
+
 }

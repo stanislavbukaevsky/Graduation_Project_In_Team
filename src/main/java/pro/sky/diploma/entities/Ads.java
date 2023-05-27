@@ -11,6 +11,8 @@ import java.util.List;
  */
 @Entity
 @Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -34,6 +36,6 @@ public class Ads {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @OneToOne(mappedBy = "ads", cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "ads", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Image image;
 }
