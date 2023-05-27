@@ -72,8 +72,8 @@ public class CommentController {
     /**
      * Метод удаления комментария
      *
-     * @param adId         идентификатор объявления
-     * @param commentId    идентификатор комментария
+     * @param adId      идентификатор объявления
+     * @param commentId идентификатор комментария
      * @return возвращает http статус
      */
     @ApiResponses(value = {

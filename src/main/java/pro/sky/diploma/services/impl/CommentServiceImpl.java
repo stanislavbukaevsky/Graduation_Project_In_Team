@@ -106,9 +106,9 @@ public class CommentServiceImpl implements CommentService {
      * Реализация метода для изменения комментария, опубликованного на платформе.
      * Этот метод может выбросить исключение {@link CommentNotFoundException}, если комментарий не найден
      *
-     * @param adId         идентификатор объявления
-     * @param commentDTO   DTO комментария
-     * @param commentId    идентификатор комментария
+     * @param adId       идентификатор объявления
+     * @param commentDTO DTO комментария
+     * @param commentId  идентификатор комментария
      * @return Возвращает DTO измененного комментария
      */
     @Override
@@ -131,7 +131,7 @@ public class CommentServiceImpl implements CommentService {
      * Приватный метод, который проверяет авторизированного пользователя, размещающего комментарий на платформе и пользователя по его роли.
      * Этот метод может выбросить исключение {@link ResponseStatusException} со статусом 403, если у пользователя нет доступа для действия
      *
-     * @param id           идентификатор объявления
+     * @param id идентификатор объявления
      * @return Возвращает true, если условие выполняется, в противном случае выбрасывает исключение
      */
     private boolean checkUsersByComment(Integer id) {
