@@ -25,9 +25,7 @@ public class WebSecurityConfig {
             "/v3/api-docs",
             "/webjars/**",
             "/login",
-            "/register",
-            "/ads",
-            "/ads/images/**"
+            "/register"
     };
 
     @Bean

@@ -1,6 +1,5 @@
 package pro.sky.diploma.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.Type;
 
@@ -35,10 +34,8 @@ public class Image {
     private LocalDateTime dateTime;
     @OneToOne
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     private User user;
     @OneToOne
     @JoinColumn(name = "ads_id")
-    @JsonIgnore
     private Ads ads;
 }
