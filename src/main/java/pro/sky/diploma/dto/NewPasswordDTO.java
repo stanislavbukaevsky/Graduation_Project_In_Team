@@ -2,6 +2,8 @@ package pro.sky.diploma.dto;
 
 import lombok.Data;
 
+import lombok.Data;
+
 /**
  * Класс-DTO для смены пароля доступа на платформу
  */

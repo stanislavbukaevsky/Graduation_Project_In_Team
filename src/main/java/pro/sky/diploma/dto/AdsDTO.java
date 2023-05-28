@@ -1,6 +1,7 @@
 package pro.sky.diploma.dto;
 
 import lombok.Data;
+import lombok.Data;
 
 /**
  * Класс-DTO для описания объявлений на платформе
