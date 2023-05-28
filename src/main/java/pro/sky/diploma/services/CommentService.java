@@ -33,15 +33,15 @@ public interface CommentService {
      * @param commentId идентификатор комментария
      * @return Возвращает DTO удаленного комментария
      */
-    CommentDTO deleteComment(Integer adId, Integer commentId);
+    void deleteComment(Integer adId, Integer commentId);
 
     /**
      * Сигнатура метода для изменения комментария, опубликованного на платформе.
      * Этот метод может выбросить исключение {@link CommentNotFoundException}, если комментарий не найден
      *
-     * @param adId       идентификатор объявления
-     * @param commentDTO DTO комментария
-     * @param commentId  идентификатор комментария
+     * @param adId         идентификатор объявления
+     * @param commentDTO   DTO комментария
+     * @param commentId    идентификатор комментария
      * @return Возвращает DTO измененного комментария
      */
     CommentDTO updateComment(Integer adId, CommentDTO commentDTO, Integer commentId);

@@ -21,18 +21,8 @@ public interface UserMapper {
      */
     @Mapping(source = "id", target = "id")
     @Mapping(source = "phoneNumber", target = "phone")
-    @Mapping(source = "user.image.data", target = "image")
+    @Mapping(source = "user", target = "image")
     UserDTO importEntityToDTO(User user);
-
-    /**
-     * Этот метод конвертирует массив байт в строку
-     *
-     * @param data массив
-     * @return Возвращает массив байт конвертированный в строку
-     */
-    default String importArrayByteToString(byte[] data) {
-        return data.toString();
-    }
 
     /**
      * Этот метод конвертирует сущность пользователя в DTO изменения пароля пользователя.
@@ -43,4 +33,14 @@ public interface UserMapper {
      */
     @Mapping(source = "password", target = "newPassword")
     NewPasswordDTO importVariablesToDTO(User user);
+
+    /**
+     * Этот метод указывает путь к изображению
+     *
+     * @param user сущность пользователя
+     * @return Возвращает ссылку на изображение в строковом виде
+     */
+    default String importEntityToStringLink(User user) {
+        return "/users/avatars/" + user.getId();
+    }
 }

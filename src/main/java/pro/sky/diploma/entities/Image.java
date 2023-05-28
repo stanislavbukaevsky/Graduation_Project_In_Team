@@ -1,8 +1,7 @@
 package pro.sky.diploma.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -14,6 +13,8 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 @Table(name = "images")
 public class Image {
     @Id
@@ -27,6 +28,7 @@ public class Image {
     @Column(name = "media_type")
     private String mediaType;
     @Lob
+    @Type(type = "org.hibernate.type.ImageType")
     private byte[] data;
     @Column(name = "date_time")
     private LocalDateTime dateTime;

@@ -18,7 +18,7 @@ public interface AdsService {
      *
      * @return Возвращает DTO всех опубликованных объявлений на платформе
      */
-    ResponseWrapperAdsDTO getAllAds();
+    ResponseWrapperAdsDTO getAllAds(String title);
 
     /**
      * Сигнатура метода для добавления новых объявлений на платформу. <br>ъ
@@ -61,4 +61,23 @@ public interface AdsService {
      * @return Возвращает DTO объявления авторизированного пользователя, размещенного на платформе
      */
     ResponseWrapperAdsDTO getAdsMe();
+
+    /**
+     * Сигнатура метода для изменения изображения у объявления, размещенного на платформе
+     *
+     * @param id        идентификатор объявления
+     * @param imageFile изображение
+     * @return Возвращает DTO измененного изображения у объявления, размещенного на платформе
+     * @throws IOException общий класс исключений ввода-вывода
+     */
+    AdsDTO updateImage(Integer id, MultipartFile imageFile) throws IOException;
+
+    /**
+     * Сигнатура метода для получения изображения у объявления по его идентификатору
+     *
+     * @param id идентификатор объявления
+     * @return Возвращает массив байт искомого изображения
+     */
+    byte[] getAdsImage(Long id);
+
 }
