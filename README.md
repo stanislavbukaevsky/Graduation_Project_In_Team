@@ -65,3 +65,4 @@
 - Лукьянчиков Николай - [ссылка на GitHub](https://github.com/NikolayLukjanchikov)
 - Кочкина Анастасия - [ссылка на GitHub](https://github.com/kochkinaanastasiya)
 
+![osna10](https://user-images.githubusercontent.com/108877956/236526868-686e692d-5b1b-4307-b02f-e2b8cddbf0ee.png)
