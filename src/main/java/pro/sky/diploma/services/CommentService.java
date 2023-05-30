@@ -31,7 +31,6 @@ public interface CommentService {
      *
      * @param adId      идентификатор объявления
      * @param commentId идентификатор комментария
-     * @return Возвращает DTO удаленного комментария
      */
     void deleteComment(Integer adId, Integer commentId);
 

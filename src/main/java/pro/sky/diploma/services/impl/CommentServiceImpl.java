@@ -96,10 +96,9 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = commentRepository.findAdsByIdAndId(idAds, idComment).orElseThrow(() ->
                 new CommentNotFoundException(COMMENT_AND_ADS_NOT_FOUND_EXCEPTION));
 
-        if (comment != null && checkUsersByComment(commentId)) {
+        if (checkUsersByComment(comment.getId())) {
             commentRepository.delete(comment);
         }
-        commentMapper.importEntityToDTO(comment);
     }
 
     /**
@@ -119,8 +118,7 @@ public class CommentServiceImpl implements CommentService {
         Long idComment = Long.valueOf(commentId);
         Comment comment = commentRepository.findAdsByIdAndId(idAds, idComment).orElseThrow(() ->
                 new CommentNotFoundException(COMMENT_AND_ADS_NOT_FOUND_EXCEPTION));
-        Integer commentIdInteger = comment.getId().intValue();
-        checkUsersByComment(commentIdInteger);
+        checkUsersByComment(idComment);
         comment.setText(commentDTO.getText());
         comment.setDateTime(dateTime);
         Comment result = commentRepository.save(comment);
@@ -131,10 +129,10 @@ public class CommentServiceImpl implements CommentService {
      * Приватный метод, который проверяет авторизированного пользователя, размещающего комментарий на платформе и пользователя по его роли.
      * Этот метод может выбросить исключение {@link ResponseStatusException} со статусом 403, если у пользователя нет доступа для действия
      *
-     * @param id           идентификатор объявления
+     * @param id идентификатор объявления
      * @return Возвращает true, если условие выполняется, в противном случае выбрасывает исключение
      */
-    private boolean checkUsersByComment(Integer id) {
+    private boolean checkUsersByComment(Long id) {
         logger.info(CHECK_USERS_COMMENT_MESSAGE_LOGGER_SERVICE, id);
         if (!(customUserDetailsService.checkAuthUserToComment(id) || customUserDetailsService.checkAdmin())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, USER_NAME_NOT_FOUND_EXCEPTION_2);

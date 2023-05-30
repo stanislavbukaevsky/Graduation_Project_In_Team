@@ -36,11 +36,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         return userSecurity;
     }
 
-    public boolean checkAuthUserToAds(Integer id) {
+    public boolean checkAuthUserToAds(Long id) {
         return findAdsById(id).equals(userSecurity.getUsername());
     }
 
-    public boolean checkAuthUserToComment(Integer id) {
+    public boolean checkAuthUserToComment(Long id) {
         return findCommentById(id).equals(userSecurity.getUsername());
     }
 
@@ -48,15 +48,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         return userSecurity.getAuthorities().stream().anyMatch(us -> us.getAuthority().contains(Role.ADMIN.name()));
     }
 
-    private String findAdsById(Integer id) {
-        Long adsId = Long.valueOf(id);
-        return adsRepository.findAdsById(adsId).orElseThrow(() ->
+    private String findAdsById(Long id) {
+        return adsRepository.findAdsById(id).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION)).getUser().getEmail();
     }
 
-    private String findCommentById(Integer id) {
-        Long commentId = Long.valueOf(id);
-        return commentRepository.findCommentById(commentId).orElseThrow(() ->
-                new CommentNotFoundException(COMMENT_AND_ADS_NOT_FOUND_EXCEPTION)).getUser().getEmail();
+    private String findCommentById(Long id) {
+        return commentRepository.findCommentById(id).orElseThrow(() ->
+                new CommentNotFoundException(COMMENT_NOT_FOUND_EXCEPTION)).getUser().getEmail();
     }
 }
