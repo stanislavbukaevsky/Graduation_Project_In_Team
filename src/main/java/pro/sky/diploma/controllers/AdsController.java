@@ -103,9 +103,10 @@ public class AdsController {
     })
     @Operation(summary = "Метод для удаления объявления, размещенного на платформе", description = "Позволяет удалить объявление, размещенное на платформе")
     @DeleteMapping(DELETE_MAPPING_REMOVE_ADS_CONTROLLER)
-    public ResponseEntity<AdsDTO> removeAds(@PathVariable(required = true) Integer id) {
+    public ResponseEntity<Void> removeAds(@PathVariable(required = true) Integer id) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_CONTROLLER, id);
-        return ResponseEntity.ok(adsService.removeAds(id));
+        adsService.removeAds(id);
+        return ResponseEntity.ok().build();
     }
 
     /**

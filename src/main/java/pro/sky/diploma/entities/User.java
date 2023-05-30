@@ -41,12 +41,12 @@ public class User {
     private Boolean active;
     @Column(name = "date_time")
     private LocalDateTime dateTime;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private Image image;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<Comment> comments;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     @LazyCollection(LazyCollectionOption.TRUE)
     private List<Ads> ads;
 }

@@ -3,8 +3,6 @@ package pro.sky.diploma.security;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +24,6 @@ import java.util.List;
 @Setter
 @Getter
 public class UserSecurity implements UserDetails {
-    private final Logger logger = LoggerFactory.getLogger(UserSecurity.class);
     private User user;
 
     @Override
