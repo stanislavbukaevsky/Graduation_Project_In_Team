@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.entities.Ads;
 import pro.sky.diploma.entities.Image;
@@ -17,7 +18,6 @@ import pro.sky.diploma.repositories.ImageRepository;
 import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.services.ImageService;
 
-import javax.transaction.Transactional;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,7 +76,7 @@ public class ImageServiceImpl implements ImageService {
         logger.info(UPDATE_IMAGE_USER_MESSAGE_LOGGER_SERVICE, username);
         User user = userRepository.findUserByEmail(username).orElseThrow(() ->
                 new UserNameNotFoundException(USER_NAME_NOT_FOUND_EXCEPTION));
-        Image image = imageRepository.findByUserId(user.getId()).orElseThrow(() ->
+        Image image = imageRepository.findImageByUserId(user.getId()).orElseThrow(() ->
                 new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
         saveAvatarUser(user.getId(), imageFile, image);
         image.setUser(user);
@@ -115,7 +115,7 @@ public class ImageServiceImpl implements ImageService {
         logger.info(UPDATE_IMAGE_ADS_MESSAGE_LOGGER_IMAGE_SERVICE, id);
         Ads ads = adsRepository.findAdsById(id).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
-        Image image = imageRepository.findByAdsId(ads.getId()).orElseThrow(() ->
+        Image image = imageRepository.findImageByAdsId(ads.getId()).orElseThrow(() ->
                 new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
         saveImageAds(ads.getId(), imageFile, image);
         image.setAds(ads);
@@ -130,7 +130,7 @@ public class ImageServiceImpl implements ImageService {
      */
     @Override
     public byte[] getUserImage(Long id) {
-        Image image = imageRepository.findByUserId(id).orElseThrow(() ->
+        Image image = imageRepository.findImageByUserId(id).orElseThrow(() ->
                 new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
         return image.getData();
     }
@@ -143,7 +143,7 @@ public class ImageServiceImpl implements ImageService {
      */
     @Override
     public byte[] getAdsImage(Long id) {
-        Image image = imageRepository.findByAdsId(id).orElseThrow(() ->
+        Image image = imageRepository.findImageByAdsId(id).orElseThrow(() ->
                 new ImageNotFoundException(IMAGE_NOT_FOUND_EXCEPTION));
         return image.getData();
     }
