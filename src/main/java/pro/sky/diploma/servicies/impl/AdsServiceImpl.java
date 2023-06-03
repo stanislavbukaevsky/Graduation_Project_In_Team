@@ -1,4 +1,4 @@
-package pro.sky.diploma.services.impl;
+package pro.sky.diploma.servicies.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,8 +25,8 @@ import pro.sky.diploma.repositories.CommentRepository;
 import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.security.CustomUserDetailsService;
 import pro.sky.diploma.security.UserSecurity;
-import pro.sky.diploma.services.AdsService;
-import pro.sky.diploma.services.ImageService;
+import pro.sky.diploma.servicies.AdsService;
+import pro.sky.diploma.servicies.ImageService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

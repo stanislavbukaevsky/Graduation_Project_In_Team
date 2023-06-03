@@ -17,7 +17,7 @@ import pro.sky.diploma.dto.AdsDTO;
 import pro.sky.diploma.dto.CreateAdsDTO;
 import pro.sky.diploma.dto.FullAdsDTO;
 import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
-import pro.sky.diploma.services.AdsService;
+import pro.sky.diploma.servicies.AdsService;
 
 import java.io.IOException;
 

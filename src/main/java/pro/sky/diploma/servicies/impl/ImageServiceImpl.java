@@ -1,4 +1,4 @@
-package pro.sky.diploma.services.impl;
+package pro.sky.diploma.servicies.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -16,7 +16,8 @@ import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.repositories.AdsRepository;
 import pro.sky.diploma.repositories.ImageRepository;
 import pro.sky.diploma.repositories.UserRepository;
-import pro.sky.diploma.services.ImageService;
+import pro.sky.diploma.servicies.ImageService;
+
 
 import java.io.*;
 import java.nio.file.Files;

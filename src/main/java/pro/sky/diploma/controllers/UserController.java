@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.dto.NewPasswordDTO;
 import pro.sky.diploma.dto.UserDTO;
-import pro.sky.diploma.services.UserService;
+import pro.sky.diploma.servicies.UserService;
 
 import java.io.IOException;
 

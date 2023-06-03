@@ -1,4 +1,4 @@
-package pro.sky.diploma.services;
+package pro.sky.diploma.servicies;
 
 import org.springframework.web.multipart.MultipartFile;
 import pro.sky.diploma.entities.Image;
