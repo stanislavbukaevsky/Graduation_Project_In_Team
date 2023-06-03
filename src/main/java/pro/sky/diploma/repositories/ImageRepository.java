@@ -20,7 +20,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
      * @param id идентификатор объявления
      * @return Возвращает найденное изображение по идентификатору объявления
      */
-    Optional<Image> findByAdsId(Long id);
+    Optional<Image> findImageByAdsId(Long id);
 
     /**
      * Этот метод ищет изображения по идентификатору зарегистрированного пользователя
@@ -28,5 +28,5 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
      * @param id идентификатор пользователя
      * @return Возвращает найденное изображение по идентификатору пользователя
      */
-    Optional<Image> findByUserId(Long id);
+    Optional<Image> findImageByUserId(Long id);
 }

@@ -13,6 +13,7 @@ import pro.sky.diploma.dto.CreateAdsDTO;
 import pro.sky.diploma.dto.FullAdsDTO;
 import pro.sky.diploma.dto.ResponseWrapperAdsDTO;
 import pro.sky.diploma.entities.Ads;
+import pro.sky.diploma.entities.Comment;
 import pro.sky.diploma.entities.Image;
 import pro.sky.diploma.entities.User;
 import pro.sky.diploma.exceptions.AdsNotFoundException;
@@ -20,6 +21,7 @@ import pro.sky.diploma.exceptions.ImageNotFoundException;
 import pro.sky.diploma.exceptions.UserNameNotFoundException;
 import pro.sky.diploma.mappers.AdsMapper;
 import pro.sky.diploma.repositories.AdsRepository;
+import pro.sky.diploma.repositories.CommentRepository;
 import pro.sky.diploma.repositories.UserRepository;
 import pro.sky.diploma.security.CustomUserDetailsService;
 import pro.sky.diploma.security.UserSecurity;
@@ -48,6 +50,7 @@ public class AdsServiceImpl implements AdsService {
     private final ImageService imageService;
     private final CustomUserDetailsService customUserDetailsService;
     private final UserSecurity userSecurity;
+    private final CommentRepository commentRepository;
 
     /**
      * Реализация метода для получения и просмотра всех объявлений, опубликованных на платформе
@@ -107,19 +110,18 @@ public class AdsServiceImpl implements AdsService {
      * Реализация метода для удаления объявлений с платформы по его идентификатору
      *
      * @param id идентификатор удаляемого объявления
-     *           //     * @param userSecurity класс, с авторизированными пользователями
-     * @return Возвращает DTO удаленного объявления
      */
     @Override
-    public AdsDTO removeAds(Integer id) {
+    public void removeAds(Integer id) {
         logger.info(REMOVE_ADS_MESSAGE_LOGGER_SERVICE, id);
         Long idAds = Long.valueOf(id);
         Ads ads = adsRepository.findAdsById(idAds).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
-        if (ads != null && checkUsersByAds(id)) {
-            adsRepository.delete(ads);
+        List<Comment> comments = ads.getComments();
+        if (checkUsersByAds(ads.getId())) {
+            comments.stream().forEach(comment -> commentRepository.deleteById(comment.getId()));
+            adsRepository.deleteById(idAds);
         }
-        return adsMapper.importEntityToDTO(ads);
     }
 
     /**
@@ -127,7 +129,6 @@ public class AdsServiceImpl implements AdsService {
      *
      * @param id           идентификатор изменяемого объявления
      * @param createAdsDTO объявление
-     *                     //     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает DTO измененного объявления на платформе
      */
     @Override
@@ -136,7 +137,7 @@ public class AdsServiceImpl implements AdsService {
         Long idAds = Long.valueOf(id);
         Ads ads = adsRepository.findAdsById(idAds).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
-        checkUsersByAds(id);
+        checkUsersByAds(idAds);
         ads.setDescription(createAdsDTO.getDescription());
         ads.setPrice(createAdsDTO.getPrice());
         ads.setTitle(createAdsDTO.getTitle());
@@ -172,6 +173,7 @@ public class AdsServiceImpl implements AdsService {
     public AdsDTO updateImage(Integer id, MultipartFile imageFile) throws IOException {
         logger.info(UPDATE_IMAGE_ADS_MESSAGE_LOGGER_SERVICE, id);
         Long adsId = Long.valueOf(id);
+        checkUsersByAds(adsId);
         Ads ads = adsRepository.findAdsById(adsId).orElseThrow(() ->
                 new AdsNotFoundException(ADS_NOT_FOUND_EXCEPTION));
 
@@ -204,10 +206,9 @@ public class AdsServiceImpl implements AdsService {
      * Этот метод может выбросить исключение {@link ResponseStatusException} со статусом 403, если у пользователя нет доступа для действия
      *
      * @param id идентификатор объявления
-     *           //     * @param userSecurity класс, с авторизированными пользователями
      * @return Возвращает true, если условие выполняется, в противном случае выбрасывает исключение
      */
-    private boolean checkUsersByAds(Integer id) {
+    private boolean checkUsersByAds(Long id) {
         logger.info(CHECK_USERS_ADS_MESSAGE_LOGGER_SERVICE, id);
         if (!(customUserDetailsService.checkAuthUserToAds(id) || customUserDetailsService.checkAdmin())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, USER_NAME_NOT_FOUND_EXCEPTION_2);
